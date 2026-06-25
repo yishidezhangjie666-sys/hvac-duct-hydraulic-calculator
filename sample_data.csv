@@ -1,0 +1,5 @@
+﻿segment_id,airflow_m3h,width_mm,height_mm,length_m,friction_pa_per_m,zeta
+S1-1,1200,500,320,8,1.2,0.8
+S1-2,1800,630,400,12,1.0,1.1
+S1-3,2500,800,400,15,0.9,1.5
+S1-4,3200,1000,500,18,0.8,1.2
