@@ -113,7 +113,17 @@ streamlit run app.py
 
 ## 项目截图
 
-当前版本暂未添加截图文件。后续可将运行界面截图保存到 `docs/screenshot.png` 并在 README 中引用。
+### 首页界面
+
+![首页界面](./screenshots/home.png)
+
+### 管段计算结果
+
+![管段计算结果](./screenshots/result-table.png)
+
+### 导出结果
+
+![导出结果](./screenshots/export.png)
 
 ---
 
