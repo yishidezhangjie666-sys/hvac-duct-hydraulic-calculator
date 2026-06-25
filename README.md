@@ -1,24 +1,27 @@
-﻿# 通风风管水力计算辅助工具
+﻿# 建环工程计算工具箱
 
-> HVAC Duct Hydraulic Calculator — 矩形风管简化水力计算工具
+> Building Environment Engineering Calculator — 面向建筑环境与能源应用工程的计算工具集
 
 ---
 
 ## 项目简介
 
-一个基于 Python + Streamlit 的通风风管水力计算辅助工具，面向建筑环境与能源应用工程、能源动力及暖通空调相关学习和工程计算场景，用于矩形风管系统的简化水力计算、计算流程演示和结果导出。
+建环工程计算工具箱是一个基于 Python + Streamlit 的工程计算工具集，面向建筑环境与能源应用工程、暖通空调及能源动力相关学习和工程计算场景。
 
-本项目第一版采用简化工程计算口径，重点实现多管段录入、自动计算、系统总阻力汇总和 CSV / Excel 导出，适合作为专业学习、课程设计辅助核算和工程计算思路展示的小型工具。
+### 当前已完成
+
+**模块一：通风风管水力计算**
+
+用于矩形风管系统的简化水力计算，支持多管段录入、自动计算、系统总阻力汇总和 CSV / Excel 导出。
 
 ---
 
-## 适用场景
+## 技术栈
 
-- 通风空调矩形风管系统的简化水力计算
-- 建筑环境与能源应用工程相关课程设计的辅助核算
-- 暖通工程计算流程演示
-- 能源动力、建筑环境与能源应用工程方向的复试、实习和项目展示
-- Python + Streamlit 工程计算小工具示例
+- Python 3.10+
+- Streamlit
+- pandas
+- openpyxl
 
 ---
 
@@ -43,6 +46,33 @@
 
 ---
 
+## 使用方法
+
+```bash
+# 克隆仓库
+git clone https://github.com/yishidezhangjie666-sys/hvac-duct-hydraulic-calculator.git
+cd hvac-duct-hydraulic-calculator
+
+# 创建虚拟环境
+python -m venv .venv
+
+# Windows
+.venv\Scripts\activate
+
+# macOS / Linux
+# source .venv/bin/activate
+
+# 安装依赖
+pip install -r requirements.txt
+
+# 运行
+streamlit run app.py
+```
+
+启动后在浏览器中打开 http://localhost:8501。
+
+---
+
 ## 计算公式
 
 | 计算项目 | 公式 | 单位说明 |
@@ -59,42 +89,6 @@
 
 ---
 
-## 安装方法
-
-```bash
-# 克隆仓库
-git clone https://github.com/yishidezhangjie666-sys/hvac-duct-hydraulic-calculator.git
-cd hvac-duct-hydraulic-calculator
-
-# 创建虚拟环境，推荐
-python -m venv .venv
-
-# Windows
-.venv\Scripts\activate
-
-# macOS / Linux
-# source .venv/bin/activate
-
-# 安装依赖
-pip install -r requirements.txt
-```
-
----
-
-## 运行方法
-
-```bash
-streamlit run app.py
-```
-
-启动后在浏览器中打开：
-
-```text
-http://localhost:8501
-```
-
----
-
 ## 示例输入
 
 | 管段编号 | 风量 (m³/h) | 宽度 (mm) | 高度 (mm) | 长度 (m) | 单位长度摩擦阻力 R (Pa/m) | 局部阻力系数 ζ |
@@ -104,40 +98,28 @@ http://localhost:8501
 | S1-3 | 2500 | 800 | 400 | 15 | 0.9 | 1.5 |
 | S1-4 | 3200 | 1000 | 500 | 18 | 0.8 | 1.2 |
 
----
-
 ## 示例输出
 
-| 管段编号 | 风速 v (m/s) | 当量直径 D<sub>e</sub> (m) | 动压 P<sub>d</sub> (Pa) | 沿程阻力 P<sub>y</sub> (Pa) | 局部阻力 P<sub>j</sub> (Pa) | 管段总阻力 P (Pa) |
+系统总阻力：60.70 Pa
+
+| 管段编号 | 风速 (m/s) | 当量直径 (m) | 动压 (Pa) | 沿程阻力 (Pa) | 局部阻力 (Pa) | 管段总阻力 (Pa) |
 |---|---:|---:|---:|---:|---:|---:|
 | S1-1 | 2.08 | 0.39 | 2.60 | 9.60 | 2.08 | 11.68 |
 | S1-2 | 1.98 | 0.49 | 2.36 | 12.00 | 2.60 | 14.60 |
 | S1-3 | 2.17 | 0.53 | 2.83 | 13.50 | 4.24 | 17.74 |
 | S1-4 | 1.78 | 0.67 | 1.90 | 14.40 | 2.28 | 16.68 |
 
-系统总阻力：60.70 Pa
-
 ---
 
 ## 项目截图
 
-当前版本暂未添加截图文件。
-
-后续可将运行界面截图保存到：
-
-```text
-docs/screenshot.png
-```
-
-然后在 README 中添加：
-
-```markdown
-![项目运行界面](docs/screenshot.png)
-```
+当前版本暂未添加截图文件。后续可将运行界面截图保存到 `docs/screenshot.png` 并在 README 中引用。
 
 ---
 
-## 后续计划
+## 后续开发计划
+
+### 模块一完善方向
 
 - [ ] 支持圆形风管
 - [ ] 增加推荐风速校核
@@ -146,14 +128,14 @@ docs/screenshot.png
 - [ ] 增加计算报告导出
 - [ ] 增加系统最不利环路分析
 
----
+### 工具箱扩展模块
 
-## 技术栈
-
-- Python 3.10+
-- Streamlit
-- pandas
-- openpyxl
+- [ ] 空调水系统水力计算
+- [ ] 冷热源设备选型
+- [ ] 风机 / 水泵选型校核
+- [ ] 能耗与运行费用估算
+- [ ] Word 计算说明书导出
+- [ ] 课程设计案例模板库
 
 ---
 
