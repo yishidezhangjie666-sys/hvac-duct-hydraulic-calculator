@@ -1,33 +1,21 @@
-# Python
+﻿# Python
 __pycache__/
-*.py[cod]
-*$py.class
-*.so
-*.egg-info/
-dist/
-build/
-.eggs/
+*.pyc
 
 # Virtual environment
 .venv/
-venv/
-env/
 
 # Streamlit
 .streamlit/
-*.streamlit_cache
 
-# IDE
-.vscode/
-.idea/
-*.swp
-*.swo
-*~
+# Export
+*.xlsx
+*.csv
+!sample_data.csv
+
+# Media
+*.mp4
 
 # OS
+.DS_Store
 Thumbs.db
-*.DS_Store
-
-# Export temporary
-*.xlsx
-!sample_data.csv
