@@ -35,6 +35,14 @@
 
 ---
 
+## 在线体验
+
+本项目已部署至 Streamlit Community Cloud，可通过以下链接在线访问：
+
+https://hvac-mep-calc-toolbox.streamlit.app/
+
+---
+
 ## 功能说明
 
 - 支持多个矩形风管管段的批量录入
