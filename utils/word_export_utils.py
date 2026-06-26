@@ -6,81 +6,107 @@ Word 计算说明书导出工具函数
 
 import io
 from docx import Document
-from docx.shared import Pt, RGBColor
+from docx.shared import Pt, RGBColor, Cm
 from docx.enum.text import WD_ALIGN_PARAGRAPH
 from docx.enum.table import WD_TABLE_ALIGNMENT
+from docx.oxml.ns import qn
+from docx.oxml import OxmlElement
 
 
-# ─── 辅助函数 ──────────────────────────────────────
+# ─── 字体辅助函数 ──────────────────────────────────
 
-def _set_font(run, size=11, color=(0,0,0), bold=False, italic=False, subscript=False):
+def _set_run(run, size=11, bold=False, italic=False, subscript=False, east_asia=None):
+    """设置 run 的完整格式：西文 Times New Roman，中文 east_asia，黑色"""
     run.font.size = Pt(size)
-    run.font.color.rgb = RGBColor(*color)
+    run.font.color.rgb = RGBColor(0, 0, 0)
     run.bold = bold
     run.italic = italic
     run.font.subscript = subscript
+    run.font.name = "Times New Roman"
+    if east_asia:
+        rpr = run._element.get_or_add_rPr()
+        rFonts = rpr.find(qn("w:rFonts"))
+        if rFonts is None:
+            rFonts = OxmlElement("w:rFonts")
+            rpr.insert(0, rFonts)
+        rFonts.set(qn("w:eastAsia"), east_asia)
 
 
 def _add_title(doc, text):
     p = doc.add_heading(text, level=0)
     p.alignment = WD_ALIGN_PARAGRAPH.CENTER
     for run in p.runs:
-        _set_font(run, size=16, bold=True)
+        _set_run(run, size=16, bold=True, east_asia="黑体")
 
 
 def _add_h1(doc, text):
     p = doc.add_heading(text, level=1)
     for run in p.runs:
-        _set_font(run, size=13, bold=True)
+        _set_run(run, size=13, bold=True, east_asia="黑体")
 
 
 def _add_para(doc, text):
     p = doc.add_paragraph()
-    _set_font(p.add_run(text))
+    _set_run(p.add_run(text), east_asia="宋体")
 
 
 def _add_table(doc, headers, rows, table_title=None):
     if table_title:
-        _add_para(doc, table_title)
+        p = doc.add_paragraph()
+        p.alignment = WD_ALIGN_PARAGRAPH.CENTER
+        _set_run(p.add_run(table_title), size=10, bold=True, east_asia="黑体")
+
     table = doc.add_table(rows=1 + len(rows), cols=len(headers))
     table.style = "Table Grid"
     table.alignment = WD_TABLE_ALIGNMENT.CENTER
+
+    # 等宽列
+    pw = int(Cm(15.5)) // len(headers)
+    for row_obj in table.rows:
+        for cell in row_obj.cells:
+            cell.width = pw
+
     for i, h in enumerate(headers):
         cell = table.rows[0].cells[i]
         cell.text = ""
         para = cell.paragraphs[0]
         para.alignment = WD_ALIGN_PARAGRAPH.CENTER
-        _set_font(para.add_run(str(h)), size=9, bold=True)
+        para.paragraph_format.space_before = Pt(0)
+        para.paragraph_format.space_after = Pt(0)
+        _set_run(para.add_run(str(h)), size=9, bold=True, east_asia="黑体")
+
     for r, row in enumerate(rows):
         for c, val in enumerate(row):
             cell = table.rows[r + 1].cells[c]
             cell.text = ""
             para = cell.paragraphs[0]
             para.alignment = WD_ALIGN_PARAGRAPH.CENTER
-            _set_font(para.add_run(str(val)), size=9)
+            para.paragraph_format.space_before = Pt(0)
+            para.paragraph_format.space_after = Pt(0)
+            _set_run(para.add_run(str(val)), size=9, east_asia="宋体")
 
 
 def _add_disclaimer(doc, text):
     p = doc.add_paragraph()
-    _set_font(p.add_run(text), size=9, italic=True)
+    r = p.add_run(text)
+    r.font.size = Pt(9)
+    r.font.color.rgb = RGBColor(0, 0, 0)
+    r.italic = True
 
 
 # ─── 富文本段落（真实下标） ────────────────────────
 
 def _rich(doc, parts):
-    """添加包含变量、下标、正体的段落。
-    parts: list of (text, italic, subscript) tuples
-    """
     p = doc.add_paragraph()
     for text, italic, sub in parts:
-        _set_font(p.add_run(text), italic=italic, subscript=sub)
+        _set_run(p.add_run(text), italic=italic, subscript=sub, east_asia="宋体")
     return p
 
 
-# 简写帮助器
-_N = lambda t: (t, False, False)   # 正体
-_I = lambda t: (t, True, False)    # 变量斜体
-_S = lambda t: (t, True, True)     # 变量斜体 + 下标
+# 简写
+_N = lambda t: (t, False, False)
+_I = lambda t: (t, True, False)
+_S = lambda t: (t, True, True)
 
 
 # ─── 数值格式化 ────────────────────────────────────
@@ -113,6 +139,8 @@ _WATER_FMT = {
 
 
 # ─── 表格拆分列名 ──────────────────────────────────
+# 注意：以下列名必须与 export_utils.py 中 VENTILATION_EXPORT_MAP /
+# WATER_EXPORT_MAP 的 values 完全一致。
 
 _VENT_INPUT = [
     "管段编号", "风量 Q（m³/h）", "宽度 a（mm）", "高度 b（mm）",
@@ -135,7 +163,7 @@ _WATER_RESULT = [
 ]
 
 
-# ─── 公式定义（使用 Word 真实下标） ────────────────
+# ─── 公式定义（Word 真实下标） ────────────────────
 
 _VENT_FMLS = [
     [_N("风量换算："), _I("Q"), _N(" = "), _I("Q"), _S("h"), _N(" / 3600（"), _I("Q"), _N("：m³/s，"), _I("Q"), _S("h"), _N("：m³/h）")],
@@ -175,6 +203,11 @@ def _subtable(df, cols):
 
 def build_ventilation_word_report(df_export, total_airflow, system_total, rho):
     doc = Document()
+    for section in doc.sections:
+        section.top_margin = Cm(2.0)
+        section.bottom_margin = Cm(2.0)
+        section.left_margin = Cm(2.5)
+        section.right_margin = Cm(2.5)
 
     _add_title(doc, "通风风管水力计算说明书")
     _add_para(doc, "本说明书由「建环工程计算工具箱」自动生成，用于通风风管系统课程设计和工程初步校核。")
@@ -212,6 +245,11 @@ def build_ventilation_word_report(df_export, total_airflow, system_total, rho):
 
 def build_water_system_word_report(df_export, summary, rho, cp, delta_t, flow_safety_factor, pressure_safety_factor):
     doc = Document()
+    for section in doc.sections:
+        section.top_margin = Cm(2.0)
+        section.bottom_margin = Cm(2.0)
+        section.left_margin = Cm(2.5)
+        section.right_margin = Cm(2.5)
 
     _add_title(doc, "空调水系统水力计算说明书")
     _add_para(doc, "本说明书由「建环工程计算工具箱」自动生成，用于空调冷冻水、热水系统课程设计和工程初步校核。")
