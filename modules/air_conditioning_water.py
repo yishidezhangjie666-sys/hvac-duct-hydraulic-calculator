@@ -13,6 +13,7 @@ from utils.export_utils import (
     export_formatted_excel,
     WATER_EXPORT_MAP,
 )
+from utils.word_export_utils import build_water_system_word_report
 
 
 # ─── 示例数据 ────────────────────────────────────────
@@ -299,6 +300,17 @@ def render_air_conditioning_water_module():
             mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
             use_container_width=True,
         )
+
+    st.download_button(
+        label="📄 导出 Word 计算说明书",
+        data=build_water_system_word_report(
+            df_export, summary, rho, cp, delta_t,
+            flow_safety_factor, pressure_safety_factor,
+        ),
+        file_name="空调水系统水力计算说明书.docx",
+        mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+        use_container_width=True,
+    )
 
     # ─── 计算公式说明 ─────────────────────────────
     st.divider()

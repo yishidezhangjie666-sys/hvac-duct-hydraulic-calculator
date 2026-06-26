@@ -13,6 +13,7 @@ from utils.export_utils import (
     export_formatted_excel,
     VENTILATION_EXPORT_MAP,
 )
+from utils.word_export_utils import build_ventilation_word_report
 
 
 def render_ventilation_duct_module():
@@ -238,6 +239,14 @@ def render_ventilation_duct_module():
             mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
             use_container_width=True,
         )
+
+    st.download_button(
+        label="📄 导出 Word 计算说明书",
+        data=build_ventilation_word_report(df_export, total_airflow, system_total, rho),
+        file_name="通风风管水力计算说明书.docx",
+        mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+        use_container_width=True,
+    )
 
     # ─── 计算公式说明 ─────────────────────────────────
     st.divider()
