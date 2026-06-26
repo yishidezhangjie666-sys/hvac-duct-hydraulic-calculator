@@ -1,14 +1,52 @@
-﻿# 建环工程计算工具箱
+# 建环工程计算工具箱
 
 > Building Environment Engineering Calculator — 面向建筑环境与能源应用工程的计算工具集
 
 ---
 
+**在线体验：** [https://hvac-mep-calc-toolbox.streamlit.app/](https://hvac-mep-calc-toolbox.streamlit.app/)
+
+---
+
 ## 项目简介
 
-建环工程计算工具箱是一个基于 Python + Streamlit 的工程计算工具集，面向建筑环境与能源应用工程、暖通、通风、空调水系统课程设计和工程初步校核的计算场景。
+建环工程计算工具箱是一个基于 Python + Streamlit 的工程计算工具集，面向建筑环境与能源应用工程、暖通、通风、空调水系统课程设计和工程初步校核。
 
-### 当前已完成
+当前包含通风风管水力计算和空调水系统水力计算两个模块，支持 CSV、Excel 和 Word 计算说明书导出，适合课程设计辅助核算、工程初步估算和个人作品集展示。
+
+---
+
+## 项目亮点
+
+- **专业方向明确**：围绕建环 / 暖通常见计算任务设计
+- **模块化结构**：modules 与 utils 分离，便于继续扩展
+- **多格式导出**：支持 CSV、Excel 和 Word 计算说明书
+- **在线部署**：已部署至 Streamlit Community Cloud
+- **可扩展性**：后续可继续增加冷热源设备选型、风机盘管选型、新风负荷计算等模块
+
+---
+
+## 技术栈
+
+- Python
+- Streamlit
+- pandas
+- openpyxl
+- python-docx
+
+---
+
+## 适用场景
+
+- 通风工程课程设计
+- 空调水系统课程设计
+- 暖通系统初步校核
+- 建环专业学生作品集
+- 工程计算工具原型开发
+
+---
+
+## 当前已完成
 
 **模块一：通风风管水力计算**
 
@@ -23,23 +61,6 @@
 - 支持水泵流量和扬程推荐
 - 支持流速校核
 - 支持 CSV / Excel / Word 导出
-
----
-
-## 技术栈
-
-- Python 3.10+
-- Streamlit
-- pandas
-- openpyxl
-
----
-
-## 在线体验
-
-本项目已部署至 Streamlit Community Cloud，可通过以下链接在线访问：
-
-https://hvac-mep-calc-toolbox.streamlit.app/
 
 ---
 
@@ -68,7 +89,7 @@ https://hvac-mep-calc-toolbox.streamlit.app/
 
 ## 使用方法
 
-```bash
+`ash
 # 克隆仓库
 git clone https://github.com/yishidezhangjie666-sys/hvac-duct-hydraulic-calculator.git
 cd hvac-duct-hydraulic-calculator
@@ -87,31 +108,12 @@ pip install -r requirements.txt
 
 # 运行
 streamlit run app.py
-```
+`
 
 启动后在浏览器中打开 http://localhost:8501。
 
----
-
-## 在线部署说明
-
-本项目可部署到 [Streamlit Community Cloud](https://streamlit.io/cloud)。部署时选择 GitHub 仓库，入口文件填写：
-
-`	ext
-app.py
-`
-
-依赖文件使用：
-
-`	ext
-requirements.txt
-`
-
-本地运行命令保持不变：
-
-`ash
-python -m streamlit run app.py
-`
+在线部署入口文件：pp.py，依赖文件：
+equirements.txt。
 
 ---
 
@@ -181,16 +183,12 @@ python -m streamlit run app.py
 
 ---
 
-## 后续开发计划
+## 后续计划
 
-- [ ] 冷热源设备选型模块
-- [ ] 风机 / 水泵选型校核模块
-- [ ] 能耗与运行费用估算模块
-- [x] Word 计算说明书导出雏形
-- [ ] Word 计算说明书格式进一步优化
-- [ ] 按课程设计通用格式自动排版
-- [ ] Word 原生公式和真实下标进一步增强
-- [ ] 工程案例模板库
+- [ ] 增加冷热源设备选型模块
+- [ ] 增加风机盘管和新风机组选型模块
+- [ ] 优化 Word 导出为更接近课程设计正式格式
+- [ ] 增加更多示例数据和计算校核说明
 
 ---
 
