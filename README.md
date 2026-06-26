@@ -85,6 +85,28 @@ streamlit run app.py
 
 ---
 
+## 在线部署说明
+
+本项目可部署到 [Streamlit Community Cloud](https://streamlit.io/cloud)。部署时选择 GitHub 仓库，入口文件填写：
+
+`	ext
+app.py
+`
+
+依赖文件使用：
+
+`	ext
+requirements.txt
+`
+
+本地运行命令保持不变：
+
+`ash
+python -m streamlit run app.py
+`
+
+---
+
 ## 计算公式
 
 | 计算项目 | 公式 | 单位说明 |

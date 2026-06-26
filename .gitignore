@@ -1,17 +1,24 @@
 ﻿# Python
 __pycache__/
 *.pyc
+*.pyo
+*.pyd
 
 # Virtual environment
 .venv/
 
-# Streamlit
-.streamlit/
+# Streamlit (keep secrets local, track config.toml)
+.streamlit/secrets.toml
 
-# Export
+# Export temporary
 *.xlsx
 *.csv
+*.docx
 !sample_data.csv
+
+# Generic temp
+*.tmp
+*.log
 
 # Media
 *.mp4
