@@ -7,7 +7,12 @@
 import streamlit as st
 import pandas as pd
 
-from utils.export_utils import prepare_export_dataframe, get_csv_bytes, get_excel_bytes
+from utils.export_utils import (
+    get_csv_bytes,
+    rename_export_columns,
+    export_formatted_excel,
+    VENTILATION_EXPORT_MAP,
+)
 
 
 def render_ventilation_duct_module():
@@ -204,7 +209,7 @@ def render_ventilation_duct_module():
     st.divider()
     st.subheader("导出数据")
 
-    df_export = prepare_export_dataframe(df_result)
+    df_export = rename_export_columns(df_result, VENTILATION_EXPORT_MAP)
 
     col_csv, col_xlsx = st.columns(2)
 
@@ -212,16 +217,24 @@ def render_ventilation_duct_module():
         st.download_button(
             label="📥 下载 CSV",
             data=get_csv_bytes(df_export),
-            file_name="hvac_calculation_result.csv",
+            file_name="通风风管水力计算结果.csv",
             mime="text/csv",
             use_container_width=True,
         )
 
+    total_airflow = df_result["airflow_m3h"].sum()
+    # 风机推荐值：按系统总参数 × 1.0（当前版本未设安全系数参数）
+    summary_rows = [
+        ("系统总风量", f"{total_airflow:.2f} m³/h"),
+        ("系统总阻力", f"{system_total:.2f} Pa"),
+        ("推荐风机风量", f"{total_airflow:.2f} m³/h"),
+        ("推荐风机风压", f"{system_total:.2f} Pa"),
+    ]
     with col_xlsx:
         st.download_button(
             label="📥 下载 Excel",
-            data=get_excel_bytes(df_export, system_total),
-            file_name="hvac_calculation_result.xlsx",
+            data=export_formatted_excel(df_export, summary_rows),
+            file_name="通风风管水力计算结果.xlsx",
             mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
             use_container_width=True,
         )

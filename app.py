@@ -1,5 +1,6 @@
 import streamlit as st
 from modules.ventilation_duct import render_ventilation_duct_module
+from modules.air_conditioning_water import render_air_conditioning_water_module
 
 st.set_page_config(
     page_title="建环工程计算工具箱 — 通风风管水力计算",
@@ -11,8 +12,10 @@ st.title("建环工程计算工具箱")
 
 module = st.sidebar.selectbox(
     "选择计算模块",
-    ["通风风管水力计算"],
+    ["通风风管水力计算", "空调水系统水力计算"],
 )
 
 if module == "通风风管水力计算":
     render_ventilation_duct_module()
+elif module == "空调水系统水力计算":
+    render_air_conditioning_water_module()
