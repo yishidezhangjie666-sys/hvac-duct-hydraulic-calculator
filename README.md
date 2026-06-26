@@ -1,18 +1,19 @@
-# 建环工程计算工具箱
+﻿# 建环工程计算工具箱
 
-> Building Environment Engineering Calculator — 面向建筑环境与能源应用工程的计算工具集
+> Building Environment Engineering Calculator — 面向建筑环境与能源应用工程的专业计算工具集
 
----
+## 在线体验
 
-**在线体验：** [https://hvac-mep-calc-toolbox.streamlit.app/](https://hvac-mep-calc-toolbox.streamlit.app/)
+本项目已部署至 Streamlit Community Cloud，可通过以下链接在线访问：
 
----
+https://hvac-mep-calc-toolbox.streamlit.app/
 
 ## 项目简介
 
 建环工程计算工具箱是一个基于 Python + Streamlit 的工程计算工具集，面向建筑环境与能源应用工程、暖通、通风、空调水系统课程设计和工程初步校核。
 
 当前包含通风风管水力计算和空调水系统水力计算两个模块，支持 CSV、Excel 和 Word 计算说明书导出，适合课程设计辅助核算、工程初步估算和个人作品集展示。
+
 
 ---
 
@@ -112,7 +113,7 @@ streamlit run app.py
 
 启动后在浏览器中打开 http://localhost:8501。
 
-在线部署入口文件：pp.py，依赖文件：
+在线部署入口文件： pp.py，依赖文件：
 equirements.txt。
 
 ---
