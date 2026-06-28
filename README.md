@@ -10,6 +10,12 @@
 
 https://hvac-mep-calc-toolbox.streamlit.app/
 
+## 当前版本
+
+当前稳定版本：`v0.1.0`
+
+详见 [CHANGELOG.md](./CHANGELOG.md)。
+
 ## 项目简介
 
 建环工程计算工具箱是一个基于 Python + Streamlit 的工程计算工具集，面向建筑环境与能源应用工程、暖通、通风、空调水系统课程设计和工程初步校核。
