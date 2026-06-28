@@ -66,7 +66,7 @@ def render_ventilation_duct_module():
     # 数据加载
     col1, col2 = st.columns([6, 1])
     with col2:
-        load_example = st.button("加载示例数据", use_container_width=True)
+        load_example = st.button("加载示例数据", width="stretch")
 
     if load_example:
         try:
@@ -81,7 +81,7 @@ def render_ventilation_duct_module():
     edited_df = st.data_editor(
         st.session_state["input_df"],
         num_rows="dynamic",
-        use_container_width=True,
+        width="stretch",
         key=f"duct_editor_{st.session_state['editor_version']}",
         column_config={
             "segment_id": st.column_config.TextColumn("管段编号", help="管段唯一标识"),
@@ -195,7 +195,7 @@ def render_ventilation_duct_module():
         "管段总阻力 P (Pa)",
     ]
     df_display = df_result[display_cols].round(2)
-    st.dataframe(df_display, use_container_width=True, hide_index=True)
+    st.dataframe(df_display, width="stretch", hide_index=True)
 
     # ─── 系统汇总 ─────────────────────────────────────
     col1, col2, col3 = st.columns([1, 2, 1])
@@ -220,7 +220,7 @@ def render_ventilation_duct_module():
             data=get_csv_bytes(df_export),
             file_name="通风风管水力计算结果.csv",
             mime="text/csv",
-            use_container_width=True,
+            width="stretch",
         )
 
     total_airflow = df_result["airflow_m3h"].sum()
@@ -237,7 +237,7 @@ def render_ventilation_duct_module():
             data=export_formatted_excel(df_export, summary_rows),
             file_name="通风风管水力计算结果.xlsx",
             mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-            use_container_width=True,
+            width="stretch",
         )
 
     st.download_button(
@@ -245,7 +245,7 @@ def render_ventilation_duct_module():
         data=build_ventilation_word_report(df_export, total_airflow, system_total, rho),
         file_name="通风风管水力计算说明书.docx",
         mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-        use_container_width=True,
+        width="stretch",
     )
 
     # ─── 计算公式说明 ─────────────────────────────────

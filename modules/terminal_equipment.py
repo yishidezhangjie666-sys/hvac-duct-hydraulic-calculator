@@ -341,21 +341,21 @@ def _render_fcu_tab():
 
     col_load, col_calc, col_clear = st.columns([2, 1, 1])
     with col_load:
-        if st.button("加载风机盘管示例数据", use_container_width=True):
+        if st.button("加载风机盘管示例数据", width="stretch"):
             st.session_state["terminal_fcu_df"] = pd.DataFrame(FCU_SAMPLE_DATA)
             st.session_state["terminal_fcu_editor_version"] += 1
             st.success("已加载风机盘管示例数据。")
     with col_calc:
-        st.button("计算", use_container_width=True, type="primary")
+        st.button("计算", width="stretch", type="primary")
     with col_clear:
-        if st.button("清空", key="clear_fcu", use_container_width=True):
+        if st.button("清空", key="clear_fcu", width="stretch"):
             st.session_state["terminal_fcu_df"] = _empty_fcu_df()
             st.session_state["terminal_fcu_editor_version"] += 1
 
     edited_df = st.data_editor(
         st.session_state["terminal_fcu_df"],
         num_rows="dynamic",
-        use_container_width=True,
+        width="stretch",
         key=f"terminal_fcu_editor_{st.session_state['terminal_fcu_editor_version']}",
         column_config={
             "room_id": st.column_config.TextColumn("房间编号"),
@@ -410,7 +410,7 @@ def _render_fcu_tab():
         df_display[col] = df_display[col].apply(lambda v: None if pd.isna(v) else v)
     st.dataframe(
         df_display,
-        use_container_width=True,
+        width="stretch",
         hide_index=True,
         column_config={
             "room_id": "房间编号",
@@ -444,7 +444,7 @@ def _render_fcu_tab():
             data=get_csv_bytes(df_export),
             file_name="风机盘管初步选型结果.csv",
             mime="text/csv",
-            use_container_width=True,
+            width="stretch",
         )
     with col_xlsx:
         st.download_button(
@@ -452,7 +452,7 @@ def _render_fcu_tab():
             data=export_formatted_excel(df_export, summary_rows, sheet_name="风机盘管选型", summary_sheet_name="选型汇总"),
             file_name="风机盘管初步选型结果.xlsx",
             mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-            use_container_width=True,
+            width="stretch",
         )
     st.download_button(
         label="📄 导出 Word 计算说明书",
@@ -464,7 +464,7 @@ def _render_fcu_tab():
         ),
         file_name="风机盘管初步选型计算说明书.docx",
         mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-        use_container_width=True,
+        width="stretch",
     )
 
     st.divider()
@@ -486,21 +486,21 @@ def _render_pau_tab():
 
     col_load, col_calc, col_clear = st.columns([2, 1, 1])
     with col_load:
-        if st.button("加载新风机组示例数据", use_container_width=True):
+        if st.button("加载新风机组示例数据", width="stretch"):
             st.session_state["terminal_pau_df"] = pd.DataFrame(PAU_SAMPLE_DATA)
             st.session_state["terminal_pau_editor_version"] += 1
             st.success("已加载新风机组示例数据。")
     with col_calc:
-        st.button("计算", key="calc_pau", use_container_width=True, type="primary")
+        st.button("计算", key="calc_pau", width="stretch", type="primary")
     with col_clear:
-        if st.button("清空", key="clear_pau", use_container_width=True):
+        if st.button("清空", key="clear_pau", width="stretch"):
             st.session_state["terminal_pau_df"] = _empty_pau_df()
             st.session_state["terminal_pau_editor_version"] += 1
 
     edited_df = st.data_editor(
         st.session_state["terminal_pau_df"],
         num_rows="dynamic",
-        use_container_width=True,
+        width="stretch",
         key=f"terminal_pau_editor_{st.session_state['terminal_pau_editor_version']}",
         column_config={
             "system_id": st.column_config.TextColumn("系统编号"),
@@ -547,7 +547,7 @@ def _render_pau_tab():
         df_display[col] = df_display[col].apply(lambda v: None if pd.isna(v) else v)
     st.dataframe(
         df_display,
-        use_container_width=True,
+        width="stretch",
         hide_index=True,
         column_config={
             "system_id": "系统编号",
@@ -582,7 +582,7 @@ def _render_pau_tab():
             data=get_csv_bytes(df_export),
             file_name="新风机组初步选型结果.csv",
             mime="text/csv",
-            use_container_width=True,
+            width="stretch",
         )
     with col_xlsx:
         st.download_button(
@@ -590,7 +590,7 @@ def _render_pau_tab():
             data=export_formatted_excel(df_export, summary_rows, sheet_name="新风机组选型", summary_sheet_name="选型汇总"),
             file_name="新风机组初步选型结果.xlsx",
             mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-            use_container_width=True,
+            width="stretch",
         )
     st.download_button(
         label="📄 导出 Word 计算说明书",
@@ -602,7 +602,7 @@ def _render_pau_tab():
         ),
         file_name="新风机组初步选型计算说明书.docx",
         mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-        use_container_width=True,
+        width="stretch",
     )
 
     st.divider()

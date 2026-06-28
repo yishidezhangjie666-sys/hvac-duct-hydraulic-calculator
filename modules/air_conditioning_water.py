@@ -136,12 +136,12 @@ def render_air_conditioning_water_module():
 
     col1, col2, col3 = st.columns([2, 1, 1])
     with col1:
-        load_example = st.button("加载示例数据", use_container_width=True)
+        load_example = st.button("加载示例数据", width="stretch")
     with col2:
-        if st.button("计算", use_container_width=True, type="primary"):
+        if st.button("计算", width="stretch", type="primary"):
             pass  # calculation happens after data_editor
     with col3:
-        if st.button("清空", use_container_width=True):
+        if st.button("清空", width="stretch"):
             st.session_state["water_input_df"] = pd.DataFrame(
                 {
                     "pipe_no": pd.Series(dtype="str"),
@@ -167,7 +167,7 @@ def render_air_conditioning_water_module():
     edited_df = st.data_editor(
         st.session_state["water_input_df"],
         num_rows="dynamic",
-        use_container_width=True,
+        width="stretch",
         key=f"water_editor_{st.session_state['water_editor_version']}",
         column_config={
             "pipe_no": st.column_config.TextColumn("管段编号"),
@@ -236,7 +236,7 @@ def render_air_conditioning_water_module():
         "动压 Pd (Pa)": 1, "沿程阻力 Py (Pa)": 1,
         "局部阻力 Pj (Pa)": 1, "管段总阻力 Pi (Pa)": 1,
     })
-    st.dataframe(df_display, use_container_width=True, hide_index=True,
+    st.dataframe(df_display, width="stretch", hide_index=True,
                  column_config={
                      "pipe_no": "管段编号",
                      "load_kw": "负荷 (kW)",
@@ -283,7 +283,7 @@ def render_air_conditioning_water_module():
             data=get_csv_bytes(df_export),
             file_name="空调水系统水力计算结果.csv",
             mime="text/csv",
-            use_container_width=True,
+            width="stretch",
         )
     summary_rows = [
         ("系统总流量", f"{summary['total_flow']:.2f} m³/h"),
@@ -298,7 +298,7 @@ def render_air_conditioning_water_module():
             data=export_formatted_excel(df_export, summary_rows),
             file_name="空调水系统水力计算结果.xlsx",
             mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-            use_container_width=True,
+            width="stretch",
         )
 
     st.download_button(
@@ -309,7 +309,7 @@ def render_air_conditioning_water_module():
         ),
         file_name="空调水系统水力计算说明书.docx",
         mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-        use_container_width=True,
+        width="stretch",
     )
 
     # ─── 计算公式说明 ─────────────────────────────

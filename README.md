@@ -195,6 +195,18 @@ streamlit run app.py
 
 ![空调水系统导出结果](./screenshots/water-export.png)
 
+### 空调末端设备：风机盘管初步选型
+
+![空调末端设备：风机盘管初步选型](./screenshots/20260628_terminal_fcu_result.png)
+
+### 空调末端设备：新风机组初步选型
+
+![空调末端设备：新风机组初步选型](./screenshots/20260628_terminal_pau_result.png)
+
+### 空调末端设备公式说明
+
+![空调末端设备公式说明](./screenshots/20260628_terminal_formula.png)
+
 ### Word 计算说明书导出
 
 ![Word 计算说明书导出](./screenshots/word-export.png)

@@ -4,7 +4,7 @@ from modules.air_conditioning_water import render_air_conditioning_water_module
 from modules.terminal_equipment import render_terminal_equipment_module
 
 st.set_page_config(
-    page_title="建环工程计算工具箱 — 通风风管水力计算",
+    page_title="建环工程计算工具箱",
     page_icon="🧰",
     layout="wide",
 )
