@@ -137,6 +137,16 @@ streamlit run app.py
 
 ---
 
+## 本地检查
+
+```powershell
+.\scripts\check_project.ps1
+```
+
+该脚本会执行 Python 编译检查、pytest 测试、Git diff 空白检查和工作区状态检查。
+
+---
+
 ## 计算公式
 
 | 计算项目 | 公式 | 单位说明 |
