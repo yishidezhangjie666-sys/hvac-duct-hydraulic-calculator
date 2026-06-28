@@ -258,17 +258,47 @@ def render_ventilation_duct_module():
         )
         st.markdown(
             """
-| 计算项目 | 公式 | 单位说明 |
-|---------|------|---------|
-| 风量换算 | <i>Q</i> = <i>Q</i><sub>h</sub> / 3600 | <i>Q</i>：m³/s，<i>Q</i><sub>h</sub>：m³/h |
-| 截面积 | <i>A</i> = <i>a</i> × <i>b</i> | <i>A</i>：m²，<i>a</i>、<i>b</i>：m |
-| 风速 | <i>v</i> = <i>Q</i> / <i>A</i> | <i>v</i>：m/s |
-| 水力直径 | <i>D</i><sub>e</sub> = 2<i>a</i><i>b</i> / (<i>a</i> + <i>b</i>) | <i>D</i><sub>e</sub>：m |
-| 动压 | <i>P</i><sub>d</sub> = ρ<i>v</i><sup>2</sup> / 2 | <i>P</i><sub>d</sub>：Pa，ρ：kg/m³ |
-| 沿程阻力 | <i>P</i><sub>y</sub> = <i>R</i> × <i>L</i> | <i>P</i><sub>y</sub>：Pa，<i>R</i>：Pa/m，<i>L</i>：m |
-| 局部阻力 | <i>P</i><sub>j</sub> = ζ × <i>P</i><sub>d</sub> | <i>P</i><sub>j</sub>：Pa |
-| 管段总阻力 | <i>P</i><sub>i</sub> = <i>P</i><sub>y</sub> + <i>P</i><sub>j</sub> | <i>P</i><sub>i</sub>：Pa |
-| 系统总阻力 | Σ<i>P</i> = Σ<i>P</i><sub>i</sub> | Σ<i>P</i>：Pa |
+<style>
+.formula-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+.formula-table th, .formula-table td {
+    border: 1px solid rgba(255,255,255,0.18);
+    padding: 10px 14px;
+    text-align: left;
+}
+.formula-table th {
+    font-weight: 700;
+}
+.formula-table sub {
+    vertical-align: sub;
+    font-size: 75%;
+    line-height: 0;
+}
+.formula-table sup {
+    vertical-align: super;
+    font-size: 75%;
+    line-height: 0;
+}
+</style>
+
+<table class="formula-table">
+<thead>
+<tr><th>计算项目</th><th>公式</th><th>单位说明</th></tr>
+</thead>
+<tbody>
+<tr><td>风量换算</td><td><span translate="no">Q = Q<sub>h</sub> / 3600</span></td><td><span translate="no">Q</span>：m³/s，<span translate="no">Q<sub>h</sub></span>：m³/h</td></tr>
+<tr><td>截面积</td><td><span translate="no">A = a × b</span></td><td><span translate="no">A</span>：m²，<span translate="no">a</span>、<span translate="no">b</span>：m</td></tr>
+<tr><td>风速</td><td><span translate="no">v = Q / A</span></td><td><span translate="no">v</span>：m/s</td></tr>
+<tr><td>水力直径</td><td><span translate="no">D<sub>e</sub> = 2ab / (a + b)</span></td><td><span translate="no">D<sub>e</sub></span>：m</td></tr>
+<tr><td>动压</td><td><span translate="no">P<sub>d</sub> = ρv<sup>2</sup> / 2</span></td><td><span translate="no">P<sub>d</sub></span>：<span translate="no">Pa</span>（帕），ρ：kg/m³</td></tr>
+<tr><td>沿程阻力</td><td><span translate="no">P<sub>y</sub> = R × L</span></td><td><span translate="no">P<sub>y</sub></span>：<span translate="no">Pa</span>（帕），<span translate="no">R</span>：<span translate="no">Pa/m</span>（帕/米），<span translate="no">L</span>：m</td></tr>
+<tr><td>局部阻力</td><td><span translate="no">P<sub>j</sub> = ζ × P<sub>d</sub></span></td><td><span translate="no">P<sub>j</sub></span>：<span translate="no">Pa</span>（帕）</td></tr>
+<tr><td>管段总阻力</td><td><span translate="no">P<sub>i</sub> = P<sub>y</sub> + P<sub>j</sub></span></td><td><span translate="no">P<sub>i</sub></span>：<span translate="no">Pa</span>（帕）</td></tr>
+<tr><td>系统总阻力</td><td><span translate="no">ΣP = ΣP<sub>i</sub></span></td><td><span translate="no">ΣP</span>：<span translate="no">Pa</span>（帕）</td></tr>
+</tbody>
+</table>
 """,
             unsafe_allow_html=True,
         )

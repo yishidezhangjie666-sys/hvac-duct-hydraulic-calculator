@@ -322,19 +322,49 @@ def render_air_conditioning_water_module():
         )
         st.markdown(
             """
-| 计算项目 | 公式 | 单位说明 |
-|---------|------|---------|
-| 水流量估算 | <i>G</i> = 0.86 × <i>Q</i><sub>L</sub> / Δ<i>t</i> | <i>G</i>：m³/h，<i>Q</i><sub>L</sub>：kW，Δ<i>t</i>：℃ |
-| 流量换算 | <i>q</i> = <i>G</i> / 3600 | <i>q</i>：m³/s |
-| 截面积 | <i>A</i> = π<i>D</i><sup>2</sup> / 4 | <i>A</i>：m²，<i>D</i>：m |
-| 流速 | <i>v</i> = <i>q</i> / <i>A</i> | <i>v</i>：m/s |
-| 动压 | <i>P</i><sub>d</sub> = ρ<i>v</i><sup>2</sup> / 2 | <i>P</i><sub>d</sub>：Pa，ρ：kg/m³ |
-| 沿程阻力 | <i>P</i><sub>y</sub> = <i>R</i> × <i>L</i> | <i>P</i><sub>y</sub>：Pa，<i>R</i>：Pa/m，<i>L</i>：m |
-| 局部阻力 | <i>P</i><sub>j</sub> = ζ × <i>P</i><sub>d</sub> | <i>P</i><sub>j</sub>：Pa |
-| 管段总阻力 | <i>P</i><sub>i</sub> = <i>P</i><sub>y</sub> + <i>P</i><sub>j</sub> | <i>P</i><sub>i</sub>：Pa |
-| 系统总阻力 | Σ<i>P</i> = Σ<i>P</i><sub>i</sub> | Pa |
-| 水泵流量 | <i>G</i><sub>pump</sub> = <i>G</i><sub>total</sub> × <i>k</i><sub>f</sub> | <i>G</i><sub>pump</sub>：m³/h，<i>k</i><sub>f</sub>：流量安全系数 |
-| 水泵扬程 | <i>H</i> = Σ<i>P</i> × <i>k</i><sub>p</sub> / (ρ<i>g</i>) | <i>H</i>：m，<i>k</i><sub>p</sub>：扬程安全系数，<i>g</i>：9.81 m/s² |
+<style>
+.formula-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+.formula-table th, .formula-table td {
+    border: 1px solid rgba(255,255,255,0.18);
+    padding: 10px 14px;
+    text-align: left;
+}
+.formula-table th {
+    font-weight: 700;
+}
+.formula-table sub {
+    vertical-align: sub;
+    font-size: 75%;
+    line-height: 0;
+}
+.formula-table sup {
+    vertical-align: super;
+    font-size: 75%;
+    line-height: 0;
+}
+</style>
+
+<table class="formula-table">
+<thead>
+<tr><th>计算项目</th><th>公式</th><th>单位说明</th></tr>
+</thead>
+<tbody>
+<tr><td>水流量估算</td><td><span translate="no">G = 0.86 × Q<sub>L</sub> / Δt</span></td><td><span translate="no">G</span>：m³/h，<span translate="no">Q<sub>L</sub></span>：kW，<span translate="no">Δt</span>：℃</td></tr>
+<tr><td>流量换算</td><td><span translate="no">q = G / 3600</span></td><td><span translate="no">q</span>：m³/s</td></tr>
+<tr><td>截面积</td><td><span translate="no">A = πD<sup>2</sup> / 4</span></td><td><span translate="no">A</span>：m²，<span translate="no">D</span>：m</td></tr>
+<tr><td>流速</td><td><span translate="no">v = q / A</span></td><td><span translate="no">v</span>：m/s</td></tr>
+<tr><td>动压</td><td><span translate="no">P<sub>d</sub> = ρv<sup>2</sup> / 2</span></td><td><span translate="no">P<sub>d</sub></span>：<span translate="no">Pa</span>（帕），ρ：kg/m³</td></tr>
+<tr><td>沿程阻力</td><td><span translate="no">P<sub>y</sub> = R × L</span></td><td><span translate="no">P<sub>y</sub></span>：<span translate="no">Pa</span>（帕），<span translate="no">R</span>：<span translate="no">Pa/m</span>（帕/米），<span translate="no">L</span>：m</td></tr>
+<tr><td>局部阻力</td><td><span translate="no">P<sub>j</sub> = ζ × P<sub>d</sub></span></td><td><span translate="no">P<sub>j</sub></span>：<span translate="no">Pa</span>（帕）</td></tr>
+<tr><td>管段总阻力</td><td><span translate="no">P<sub>i</sub> = P<sub>y</sub> + P<sub>j</sub></span></td><td><span translate="no">P<sub>i</sub></span>：<span translate="no">Pa</span>（帕）</td></tr>
+<tr><td>系统总阻力</td><td><span translate="no">ΣP = ΣP<sub>i</sub></span></td><td><span translate="no">ΣP</span>：<span translate="no">Pa</span>（帕）</td></tr>
+<tr><td>水泵流量</td><td><span translate="no">G<sub>pump</sub> = G<sub>total</sub> × k<sub>f</sub></span></td><td><span translate="no">G<sub>pump</sub></span>：m³/h，<span translate="no">k<sub>f</sub></span>：流量安全系数</td></tr>
+<tr><td>水泵扬程</td><td><span translate="no">H = ΣP × k<sub>p</sub> / (ρg)</span></td><td><span translate="no">H</span>：m，<span translate="no">k<sub>p</sub></span>：扬程安全系数，<span translate="no">g</span>：9.81 m/s²</td></tr>
+</tbody>
+</table>
 """,
             unsafe_allow_html=True,
         )
