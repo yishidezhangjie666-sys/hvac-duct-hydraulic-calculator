@@ -83,7 +83,7 @@ https://hvac-mep-calc-toolbox.streamlit.app/
 - 示例数据一键加载
 - CSV / Excel 导出
 - Word 计算说明书导出，可自动生成包含输入参数、管段计算结果、系统汇总、
-  计算公式说明和免责声明的 .docx 文件（当前支持导出雏形，后续将继续完善课程设计格式）
+  计算公式说明和免责声明的 .docx 文件（后续将继续优化 Word 计算说明书导出格式，使其更适合课程设计辅助核算和工程初步校核展示）
 - 内嵌公式说明，方便截图展示
 
 ---
@@ -159,11 +159,15 @@ streamlit run app.py
 
 ### 首页与模块选择
 
-![首页与模块选择](./screenshots/home.png)
+![首页与模块选择](./screenshots/20260628_home.png)
 
 ### 通风风管水力计算结果
 
-![通风风管水力计算结果](./screenshots/ventilation-result.png)
+![通风风管水力计算结果](./screenshots/20260628_ventilation_result.png)
+
+### 通风风管公式说明
+
+![通风风管公式说明](./screenshots/20260628_ventilation_formula.png)
 
 ### 通风风管导出结果
 
@@ -171,7 +175,11 @@ streamlit run app.py
 
 ### 空调水系统水力计算结果
 
-![空调水系统水力计算结果](./screenshots/water-result.png)
+![空调水系统水力计算结果](./screenshots/20260628_water_result.png)
+
+### 空调水系统公式说明
+
+![空调水系统公式说明](./screenshots/20260628_water_formula.png)
 
 ### 空调水系统导出结果
 
@@ -187,7 +195,7 @@ streamlit run app.py
 
 - [ ] 增加冷热源设备选型模块
 - [ ] 增加风机盘管和新风机组选型模块
-- [ ] 优化 Word 导出为更接近课程设计正式格式
+- [ ] 优化 Word 计算说明书导出格式，使其更适合课程设计辅助核算和工程初步校核展示
 - [ ] 增加更多示例数据和计算校核说明
 
 ---
