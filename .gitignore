@@ -1,4 +1,4 @@
-﻿# Python
+# Python
 __pycache__/
 *.pyc
 *.pyo
@@ -9,6 +9,10 @@ __pycache__/
 
 # Streamlit (keep secrets local, track config.toml)
 .streamlit/secrets.toml
+
+# Local Codex / agent runtime files
+.agents/
+skills-lock.json
 
 # Export temporary
 *.xlsx

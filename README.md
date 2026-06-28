@@ -1,4 +1,4 @@
-﻿# 建环工程计算工具箱
+# 建环工程计算工具箱
 
 > Building Environment Engineering Calculator — 面向建筑环境与能源应用工程的专业计算工具集
 
@@ -90,7 +90,7 @@ https://hvac-mep-calc-toolbox.streamlit.app/
 
 ## 使用方法
 
-`ash
+```bash
 # 克隆仓库
 git clone https://github.com/yishidezhangjie666-sys/hvac-duct-hydraulic-calculator.git
 cd hvac-duct-hydraulic-calculator
@@ -109,12 +109,11 @@ pip install -r requirements.txt
 
 # 运行
 streamlit run app.py
-`
+```
 
 启动后在浏览器中打开 http://localhost:8501。
 
-在线部署入口文件： pp.py，依赖文件：
-equirements.txt。
+在线部署入口文件：app.py，依赖文件：requirements.txt。
 
 ---
 
