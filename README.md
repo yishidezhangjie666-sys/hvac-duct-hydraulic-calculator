@@ -147,6 +147,12 @@ streamlit run app.py
 
 ---
 
+## 自动化检查
+
+本项目已配置 GitHub Actions。每次 push 到 main 或创建 pull request 时，会自动运行 Python 编译检查和 pytest 测试，用于降低后续模块维护时误改旧功能的风险。
+
+---
+
 ## 计算公式
 
 | 计算项目 | 公式 | 单位说明 |
