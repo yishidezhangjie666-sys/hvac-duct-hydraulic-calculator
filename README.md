@@ -1,5 +1,7 @@
 # 建环工程计算工具箱
 
+[![Project Checks](https://github.com/yishidezhangjie666-sys/hvac-duct-hydraulic-calculator/actions/workflows/ci.yml/badge.svg)](https://github.com/yishidezhangjie666-sys/hvac-duct-hydraulic-calculator/actions/workflows/ci.yml)
+
 > Building Environment Engineering Calculator — 面向建筑环境与能源应用工程的专业计算工具集
 
 ## 在线体验
