@@ -13,7 +13,72 @@ from utils.export_utils import (
     export_formatted_excel,
     VENTILATION_EXPORT_MAP,
 )
-from utils.word_export_utils import build_ventilation_word_report
+from utils.word_report import build_calculation_report_docx
+
+
+VENTILATION_INPUT_COLUMNS = [
+    "管段编号",
+    "风量 Q（m³/h）",
+    "宽度 a（mm）",
+    "高度 b（mm）",
+    "长度 L（m）",
+    "单位长度摩擦阻力 R（Pa/m）",
+    "局部阻力系数 ζ",
+]
+
+VENTILATION_RESULT_COLUMNS = [
+    "管段编号",
+    "风量 q（m³/s）",
+    "截面积 A（m²）",
+    "风速 v（m/s）",
+    "当量直径 De（m）",
+    "动压 Pd（Pa）",
+    "沿程阻力 Py（Pa）",
+    "局部阻力 Pj（Pa）",
+    "管段总阻力 Pi（Pa）",
+]
+
+VENTILATION_FORMULA_ROWS = [
+    ("风量换算", "Q = Q_h / 3600", "Q：m³/s，Q_h：m³/h"),
+    ("截面积", "A = a × b", "A：m²，a、b：m"),
+    ("风速", "v = Q / A", "v：m/s"),
+    ("水力直径", "D_e = 2ab / (a + b)", "D_e：m"),
+    ("动压", "P_d = ρv² / 2", "P_d：Pa，ρ：kg/m³"),
+    ("沿程阻力", "P_y = R × L", "P_y：Pa，R：Pa/m，L：m"),
+    ("局部阻力", "P_j = ζ × P_d", "P_j：Pa"),
+    ("管段总阻力", "P_i = P_y + P_j", "P_i：Pa"),
+    ("系统总阻力", "ΣP = ΣP_i", "Pa"),
+]
+
+
+def _select_report_columns(df, columns):
+    available = [col for col in columns if col in df.columns]
+    return df[available].copy()
+
+
+def _build_ventilation_word_report(df_export, total_airflow, system_total, rho, summary_rows):
+    report_summary = [("管段数量", f"{len(df_export)} 个")] + summary_rows
+    return build_calculation_report_docx(
+        title="通风风管水力计算说明书",
+        module_name="通风风管水力计算",
+        description=(
+            "本模块用于通风风管系统初步水力计算，可计算风速、当量直径、动压、"
+            "沿程阻力、局部阻力和系统总阻力，并给出风机风量与风压参考值。"
+        ),
+        input_tables=[
+            {"title": "管段原始输入数据", "data": _select_report_columns(df_export, VENTILATION_INPUT_COLUMNS)},
+            {"title": "计算参数", "data": [("空气密度 ρ", f"{rho:.2f} kg/m³")]},
+        ],
+        result_tables=[
+            {"title": "管段计算结果", "data": _select_report_columns(df_export, VENTILATION_RESULT_COLUMNS)},
+        ],
+        summary_rows=report_summary,
+        formula_rows=VENTILATION_FORMULA_ROWS,
+        notes=[
+            f"系统总风量为 {total_airflow:.2f} m³/h，系统总阻力为 {system_total:.2f} Pa。",
+            "风机参考值为简化估算，实际工程应结合最不利环路、设备样本和规范要求复核。",
+        ],
+    )
 
 
 def render_ventilation_duct_module():
@@ -242,7 +307,13 @@ def render_ventilation_duct_module():
 
     st.download_button(
         label="📄 导出 Word 计算说明书",
-        data=build_ventilation_word_report(df_export, total_airflow, system_total, rho),
+        data=_build_ventilation_word_report(
+            df_export,
+            total_airflow,
+            system_total,
+            rho,
+            summary_rows,
+        ),
         file_name="通风风管水力计算说明书.docx",
         mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
         width="stretch",

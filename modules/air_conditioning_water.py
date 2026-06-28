@@ -13,7 +13,91 @@ from utils.export_utils import (
     export_formatted_excel,
     WATER_EXPORT_MAP,
 )
-from utils.word_export_utils import build_water_system_word_report
+from utils.word_report import build_calculation_report_docx
+
+
+WATER_INPUT_COLUMNS = [
+    "管段编号",
+    "负荷 QL（kW）",
+    "水流量 G（m³/h）",
+    "管道内径 D（mm）",
+    "长度 L（m）",
+    "单位长度沿程阻力 R（Pa/m）",
+    "局部阻力系数 ζ",
+]
+
+WATER_RESULT_COLUMNS = [
+    "管段编号",
+    "流量 q（m³/s）",
+    "截面积 A（m²）",
+    "流速 v（m/s）",
+    "动压 Pd（Pa）",
+    "沿程阻力 Py（Pa）",
+    "局部阻力 Pj（Pa）",
+    "管段总阻力 Pi（Pa）",
+    "流速校核",
+]
+
+WATER_FORMULA_ROWS = [
+    ("水流量估算", "G = Q_L / (c × Δt)，当前工具采用简化式 G = 0.86 × Q_L / Δt", "G：m³/h，Q_L：kW，c：水比热，Δt：℃"),
+    ("流量换算", "q = G / 3600", "q：m³/s，G：m³/h"),
+    ("截面积", "A = πD² / 4", "A：m²，D：m"),
+    ("流速", "v = q / A", "v：m/s"),
+    ("动压", "P_d = ρv² / 2", "P_d：Pa，ρ：kg/m³"),
+    ("沿程阻力", "P_y = R × L", "P_y：Pa，R：Pa/m，L：m"),
+    ("局部阻力", "P_j = ζ × P_d", "P_j：Pa"),
+    ("管段总阻力", "P_i = P_y + P_j", "P_i：Pa"),
+    ("系统总阻力", "ΣP = ΣP_i", "Pa"),
+    ("水泵扬程", "H = P / (ρg)", "H：m，P：Pa，g：9.81 m/s²"),
+]
+
+
+def _select_report_columns(df, columns):
+    available = [col for col in columns if col in df.columns]
+    return df[available].copy()
+
+
+def _build_water_word_report(
+    df_export,
+    summary,
+    rho,
+    cp,
+    delta_t,
+    flow_safety_factor,
+    pressure_safety_factor,
+    summary_rows,
+):
+    report_summary = [("管段数量", f"{len(df_export)} 个")] + summary_rows
+    return build_calculation_report_docx(
+        title="空调水系统水力计算说明书",
+        module_name="空调水系统水力计算",
+        description=(
+            "本模块用于空调冷冻水、热水系统的初步水力计算，可根据负荷和供回水温差估算水流量，"
+            "并计算管径、流速、沿程阻力、局部阻力、系统总阻力和水泵参考参数。"
+        ),
+        input_tables=[
+            {"title": "管段输入数据", "data": _select_report_columns(df_export, WATER_INPUT_COLUMNS)},
+            {
+                "title": "系统计算参数",
+                "data": [
+                    ("水密度 ρ", f"{rho:.0f} kg/m³"),
+                    ("水比热容 c", f"{cp:.3f} kJ/(kg·℃)"),
+                    ("供回水温差 Δt", f"{delta_t:.1f} ℃"),
+                    ("水泵流量安全系数", f"{flow_safety_factor:.2f}"),
+                    ("水泵扬程安全系数", f"{pressure_safety_factor:.2f}"),
+                ],
+            },
+        ],
+        result_tables=[
+            {"title": "管段计算结果", "data": _select_report_columns(df_export, WATER_RESULT_COLUMNS)},
+        ],
+        summary_rows=report_summary,
+        formula_rows=WATER_FORMULA_ROWS,
+        notes=[
+            f"系统总流量为 {summary['total_flow']:.2f} m³/h，系统总阻力为 {summary['total_loss']:.1f} Pa。",
+            "水泵参数为简化估算，实际选型应结合设备样本、最不利环路及水力平衡要求复核。",
+        ],
+    )
 
 
 # ─── 示例数据 ────────────────────────────────────────
@@ -303,9 +387,10 @@ def render_air_conditioning_water_module():
 
     st.download_button(
         label="📄 导出 Word 计算说明书",
-        data=build_water_system_word_report(
+        data=_build_water_word_report(
             df_export, summary, rho, cp, delta_t,
             flow_safety_factor, pressure_safety_factor,
+            summary_rows,
         ),
         file_name="空调水系统水力计算说明书.docx",
         mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document",

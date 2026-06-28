@@ -4,13 +4,11 @@
 模块四：风冷热泵、冷水机组、锅炉 / 热源设备的简化初步选型校核。
 """
 
-import io
-
 import pandas as pd
 import streamlit as st
-from docx import Document
 
 from utils.export_utils import export_formatted_excel, get_csv_bytes
+from utils.word_report import build_calculation_report_docx
 
 
 AIR_HEAT_PUMP_SAMPLE_DATA = {
@@ -109,6 +107,96 @@ BOILER_EXPORT_MAP = {
     "选型结论": "选型结论",
     "remark": "备注",
 }
+
+AIR_HEAT_PUMP_INPUT_COLUMNS = [
+    "方案编号",
+    "服务区域",
+    "设计冷负荷 Qc（kW）",
+    "设计热负荷 Qh（kW）",
+    "冷量修正系数 Kc",
+    "热量修正系数 Kh",
+    "单台额定制冷量（kW）",
+    "单台额定制热量（kW）",
+    "台数 N",
+    "备注",
+]
+
+AIR_HEAT_PUMP_RESULT_COLUMNS = [
+    "方案编号",
+    "所需制冷量（kW）",
+    "所需制热量（kW）",
+    "总制冷量（kW）",
+    "总制热量（kW）",
+    "制冷量余量",
+    "制热量余量",
+    "制冷校核",
+    "制热校核",
+    "选型结论",
+]
+
+CHILLER_INPUT_COLUMNS = [
+    "方案编号",
+    "服务区域",
+    "设计冷负荷 Qc（kW）",
+    "冷量备用系数 Kc",
+    "单台额定制冷量（kW）",
+    "台数 N",
+    "冷冻水供水温度（℃）",
+    "冷冻水回水温度（℃）",
+    "备注",
+]
+
+CHILLER_RESULT_COLUMNS = [
+    "方案编号",
+    "所需制冷量（kW）",
+    "总制冷量（kW）",
+    "制冷量余量",
+    "制冷校核",
+    "供回水温差 Δt（℃）",
+    "温差校核",
+    "选型结论",
+]
+
+BOILER_INPUT_COLUMNS = [
+    "方案编号",
+    "服务区域",
+    "设计热负荷 Qh（kW）",
+    "热量备用系数 Kh",
+    "单台额定供热量（kW）",
+    "台数 N",
+    "供水温度（℃）",
+    "回水温度（℃）",
+    "备注",
+]
+
+BOILER_RESULT_COLUMNS = [
+    "方案编号",
+    "所需供热量（kW）",
+    "总供热量（kW）",
+    "供热量余量",
+    "供热校核",
+    "供回水温差 Δt（℃）",
+    "温差校核",
+    "选型结论",
+]
+
+SOURCE_FORMULA_ROWS = [
+    ("所需容量", "Q_required = Q_load × K", "Q_required：所需容量，Q_load：设计负荷，K：备用或修正系数"),
+    ("总装机容量", "Q_total = N × Q_single", "N：设备台数，Q_single：单台容量"),
+    ("容量余量", "η = Q_total / Q_required - 1", "η < 0 为不足，0-20% 为合理，20%-50% 为偏大"),
+]
+
+COOLING_DELTA_FORMULA_ROW = (
+    "供回水温差",
+    "Δt = t_return - t_supply",
+    "冷冻水按回水温度减供水温度，单位为 ℃",
+)
+
+HEATING_DELTA_FORMULA_ROW = (
+    "供回水温差",
+    "Δt = t_supply - t_return",
+    "热源设备通常按供水温度减回水温度，单位为 ℃",
+)
 
 FORMULA_STYLE = """
 <style>
@@ -374,38 +462,38 @@ def _format_number_columns(df, columns):
     return formatted
 
 
-def _build_source_word_report(title, description, df_export, summary_rows):
-    doc = Document()
-    doc.add_heading(title, level=0)
-    doc.add_paragraph(description)
+def _select_report_columns(df, columns):
+    available = [col for col in columns if col in df.columns]
+    return df[available].copy()
 
-    doc.add_heading("一、计算结果", level=1)
-    table = doc.add_table(rows=1, cols=len(df_export.columns))
-    table.style = "Table Grid"
-    for idx, col in enumerate(df_export.columns):
-        table.rows[0].cells[idx].text = str(col)
-    for _, row in df_export.iterrows():
-        cells = table.add_row().cells
-        for idx, value in enumerate(row):
-            cells[idx].text = "" if pd.isna(value) else str(value)
 
-    doc.add_heading("二、汇总", level=1)
-    for label, value in summary_rows:
-        doc.add_paragraph(f"{label}：{value}")
-
-    doc.add_heading("三、说明", level=1)
-    doc.add_paragraph(
-        "本说明书由建环工程计算工具箱自动生成，计算结果仅用于学习、"
-        "课程设计辅助核算和工程初步校核。"
+def _build_source_word_report(
+    title,
+    module_name,
+    description,
+    df_export,
+    summary_rows,
+    input_columns,
+    result_columns,
+    formula_rows,
+    notes=None,
+):
+    return build_calculation_report_docx(
+        title=title,
+        module_name=module_name,
+        description=description,
+        input_tables=[
+            {"title": "负荷与拟选设备参数", "data": _select_report_columns(df_export, input_columns)},
+        ],
+        result_tables=[
+            {"title": "设备选型校核结果", "data": _select_report_columns(df_export, result_columns)},
+        ],
+        summary_rows=summary_rows,
+        formula_rows=formula_rows,
+        notes=[
+            "冷热源设备最终选型应结合设备样本、运行工况、效率等级、系统配置、备用原则、安装条件和现行规范进行复核。"
+        ] + (notes or []),
     )
-    doc.add_paragraph(
-        "冷热源设备最终选型应结合设备样本、运行工况、效率等级、系统配置、"
-        "备用原则、安装条件和现行规范进行复核。"
-    )
-
-    buf = io.BytesIO()
-    doc.save(buf)
-    return buf.getvalue()
 
 
 def _summary_rows(result, id_col, capacity_col, conclusion_col="选型结论"):
@@ -465,7 +553,18 @@ def _delta_formula_row():
 """
 
 
-def _render_export_buttons(df_export, summary_rows, file_stem, word_title, word_desc):
+def _render_export_buttons(
+    df_export,
+    summary_rows,
+    file_stem,
+    word_title,
+    word_module_name,
+    word_desc,
+    input_columns,
+    result_columns,
+    formula_rows,
+    notes=None,
+):
     col_csv, col_xlsx = st.columns(2)
     with col_csv:
         st.download_button(
@@ -490,7 +589,17 @@ def _render_export_buttons(df_export, summary_rows, file_stem, word_title, word_
         )
     st.download_button(
         label="📄 导出 Word 计算说明书",
-        data=_build_source_word_report(word_title, word_desc, df_export, summary_rows),
+        data=_build_source_word_report(
+            word_title,
+            word_module_name,
+            word_desc,
+            df_export,
+            summary_rows,
+            input_columns,
+            result_columns,
+            formula_rows,
+            notes,
+        ),
         file_name=f"{file_stem}计算说明书.docx",
         mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
         width="stretch",
@@ -597,7 +706,11 @@ def _render_air_heat_pump_tab():
         summary_rows,
         "风冷热泵机组初步选型结果",
         "风冷热泵机组初步选型计算说明书",
+        "风冷热泵机组初步选型",
         "用于风冷热泵机组制冷量、制热量和台数的简化初步选型校核。",
+        AIR_HEAT_PUMP_INPUT_COLUMNS,
+        AIR_HEAT_PUMP_RESULT_COLUMNS,
+        SOURCE_FORMULA_ROWS,
     )
 
     st.divider()
@@ -698,7 +811,11 @@ def _render_chiller_tab():
         summary_rows,
         "冷水机组初步选型结果",
         "冷水机组初步选型计算说明书",
+        "冷水机组初步选型",
         "用于冷水机组制冷量、台数和冷冻水温差的简化初步选型校核。",
+        CHILLER_INPUT_COLUMNS,
+        CHILLER_RESULT_COLUMNS,
+        SOURCE_FORMULA_ROWS + [COOLING_DELTA_FORMULA_ROW],
     )
 
     st.divider()
@@ -799,7 +916,12 @@ def _render_boiler_tab():
         summary_rows,
         "锅炉热源设备初步选型结果",
         "锅炉 / 热源设备初步选型计算说明书",
+        "锅炉 / 热源设备初步选型",
         "用于锅炉或热源设备供热量、台数和供回水温差的简化初步选型校核。",
+        BOILER_INPUT_COLUMNS,
+        BOILER_RESULT_COLUMNS,
+        SOURCE_FORMULA_ROWS + [HEATING_DELTA_FORMULA_ROW],
+        notes=["锅炉 / 热源设备温差通常按供水温度减回水温度计算。"],
     )
 
     st.divider()

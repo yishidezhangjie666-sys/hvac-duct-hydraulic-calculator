@@ -4,13 +4,11 @@
 模块三：风机盘管和新风机组的简化初步选型校核。
 """
 
-import io
-
 import pandas as pd
 import streamlit as st
-from docx import Document
 
 from utils.export_utils import export_formatted_excel, get_csv_bytes
+from utils.word_report import build_calculation_report_docx
 
 
 FCU_SAMPLE_DATA = {
@@ -71,6 +69,64 @@ PAU_EXPORT_MAP = {
     "焓差校核": "焓差校核",
     "选型结论": "选型结论",
 }
+
+FCU_INPUT_COLUMNS = [
+    "房间编号",
+    "房间名称",
+    "冷负荷 Qc（kW）",
+    "热负荷 Qh（kW）",
+    "设计风量 L（m³/h）",
+    "额定冷量（kW）",
+    "额定热量（kW）",
+    "额定风量（m³/h）",
+]
+
+FCU_RESULT_COLUMNS = [
+    "房间编号",
+    "冷量余量",
+    "热量余量",
+    "风量余量",
+    "冷量校核",
+    "热量校核",
+    "风量校核",
+    "选型结论",
+]
+
+PAU_INPUT_COLUMNS = [
+    "系统编号",
+    "服务区域",
+    "新风量 L（m³/h）",
+    "室外空气焓值 hW（kJ/kg）",
+    "室内空气焓值 hN（kJ/kg）",
+    "空气密度 ρ（kg/m³）",
+    "拟选新风机组冷量（kW）",
+    "拟选新风机组风量（m³/h）",
+]
+
+PAU_RESULT_COLUMNS = [
+    "系统编号",
+    "新风质量流量 m（kg/s）",
+    "新风冷负荷 Q（kW）",
+    "冷量余量",
+    "风量余量",
+    "冷量校核",
+    "风量校核",
+    "焓差校核",
+    "选型结论",
+]
+
+FCU_FORMULA_ROWS = [
+    ("冷量余量", "η_c = Q_c,rated / Q_c - 1", "Q_c,rated：额定冷量，Q_c：房间冷负荷"),
+    ("热量余量", "η_h = Q_h,rated / Q_h - 1", "Q_h,rated：额定热量，Q_h：房间热负荷"),
+    ("风量余量", "η_L = L_rated / L - 1", "L_rated：额定风量，L：设计风量"),
+]
+
+PAU_FORMULA_ROWS = [
+    ("新风质量流量", "m = ρ × L / 3600", "m：kg/s，ρ：kg/m³，L：m³/h"),
+    ("新风冷负荷", "Q = m × (h_W - h_N)", "Q：kW，h_W、h_N：kJ/kg"),
+    ("机组冷量余量", "η_Q = Q_rated / Q - 1", "Q_rated：拟选机组冷量"),
+    ("机组风量余量", "η_L = L_rated / L - 1", "L_rated：拟选机组风量"),
+]
 
 FORMULA_STYLE = """
 <style>
@@ -239,36 +295,38 @@ def _format_percent_columns(df, columns):
     return formatted
 
 
-def _build_terminal_word_report(title, description, df_export, summary_rows):
-    doc = Document()
-    doc.add_heading(title, level=0)
-    doc.add_paragraph(description)
+def _select_report_columns(df, columns):
+    available = [col for col in columns if col in df.columns]
+    return df[available].copy()
 
-    doc.add_heading("一、计算结果", level=1)
-    table = doc.add_table(rows=1, cols=len(df_export.columns))
-    table.style = "Table Grid"
-    for idx, col in enumerate(df_export.columns):
-        table.rows[0].cells[idx].text = str(col)
-    for _, row in df_export.iterrows():
-        cells = table.add_row().cells
-        for idx, value in enumerate(row):
-            cells[idx].text = "" if pd.isna(value) else str(value)
 
-    doc.add_heading("二、汇总", level=1)
-    for label, value in summary_rows:
-        doc.add_paragraph(f"{label}：{value}")
-
-    doc.add_heading("三、说明", level=1)
-    doc.add_paragraph(
-        "本说明书由建环工程计算工具箱自动生成，计算结果仅用于学习、课程设计辅助核算和工程初步校核。"
+def _build_terminal_word_report(
+    title,
+    module_name,
+    description,
+    df_export,
+    summary_rows,
+    input_columns,
+    result_columns,
+    formula_rows,
+    notes=None,
+):
+    return build_calculation_report_docx(
+        title=title,
+        module_name=module_name,
+        description=description,
+        input_tables=[
+            {"title": "输入参数与拟选设备参数", "data": _select_report_columns(df_export, input_columns)},
+        ],
+        result_tables=[
+            {"title": "选型计算结果", "data": _select_report_columns(df_export, result_columns)},
+        ],
+        summary_rows=summary_rows,
+        formula_rows=formula_rows,
+        notes=[
+            "设备最终选型应结合厂家样本、噪声、余压、水阻、控制方式和现行规范进行复核。"
+        ] + (notes or []),
     )
-    doc.add_paragraph(
-        "设备最终选型应结合厂家样本、噪声、余压、水阻、控制方式和现行规范进行复核。"
-    )
-
-    buf = io.BytesIO()
-    doc.save(buf)
-    return buf.getvalue()
 
 
 def _fcu_summary_rows(df):
@@ -458,9 +516,13 @@ def _render_fcu_tab():
         label="📄 导出 Word 计算说明书",
         data=_build_terminal_word_report(
             "风机盘管初步选型计算说明书",
+            "风机盘管初步选型",
             "用于风机盘管冷量、热量和风量的简化初步选型校核。",
             df_export,
             summary_rows,
+            FCU_INPUT_COLUMNS,
+            FCU_RESULT_COLUMNS,
+            FCU_FORMULA_ROWS,
         ),
         file_name="风机盘管初步选型计算说明书.docx",
         mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
@@ -596,9 +658,14 @@ def _render_pau_tab():
         label="📄 导出 Word 计算说明书",
         data=_build_terminal_word_report(
             "新风机组初步选型计算说明书",
+            "新风机组初步选型",
             "用于新风机组冷量和风量的简化初步选型校核。",
             df_export,
             summary_rows,
+            PAU_INPUT_COLUMNS,
+            PAU_RESULT_COLUMNS,
+            PAU_FORMULA_ROWS,
+            notes=["当室外空气焓值不高于室内空气焓值时，冷负荷估算结果应复核。"],
         ),
         file_name="新风机组初步选型计算说明书.docx",
         mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document",

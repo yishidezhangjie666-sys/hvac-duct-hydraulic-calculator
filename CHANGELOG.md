@@ -1,5 +1,12 @@
 # Changelog
 
+## Unreleased
+
+### Changed
+
+- 统一四个模块的 Word 计算说明书导出结构。
+- 新增 Word 导出基础测试，降低后续导出功能回归风险。
+
 ## v0.1.0 - 2026-06-28
 
 ### Added
