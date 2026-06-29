@@ -50,3 +50,20 @@ def test_local_agent_runtime_files_are_not_tracked_by_git():
         check=True,
     )
     assert result.stdout.strip() == ""
+
+
+def test_app_includes_fan_pump_selection_entry():
+    app_text = (ROOT / "app.py").read_text(encoding="utf-8")
+    module_text = (ROOT / "modules" / "fan_pump_selection.py").read_text(encoding="utf-8")
+
+    assert "render_fan_pump_selection_module" in app_text
+    assert "风机 / 水泵选型校核" in app_text
+    assert "render_fan_pump_selection_module" in module_text
+
+    for module_name in [
+        "通风风管水力计算",
+        "空调水系统水力计算",
+        "空调末端设备初步选型",
+        "冷热源设备初步选型",
+    ]:
+        assert module_name in app_text

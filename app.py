@@ -3,6 +3,7 @@ from modules.ventilation_duct import render_ventilation_duct_module
 from modules.air_conditioning_water import render_air_conditioning_water_module
 from modules.terminal_equipment import render_terminal_equipment_module
 from modules.heat_cold_source import render_heat_cold_source_module
+from modules.fan_pump_selection import render_fan_pump_selection_module
 
 st.set_page_config(
     page_title="建环工程计算工具箱",
@@ -19,6 +20,7 @@ module = st.sidebar.selectbox(
         "空调水系统水力计算",
         "空调末端设备初步选型",
         "冷热源设备初步选型",
+        "风机 / 水泵选型校核",
     ],
 )
 
@@ -30,3 +32,5 @@ elif module == "空调末端设备初步选型":
     render_terminal_equipment_module()
 elif module == "冷热源设备初步选型":
     render_heat_cold_source_module()
+elif module == "风机 / 水泵选型校核":
+    render_fan_pump_selection_module()

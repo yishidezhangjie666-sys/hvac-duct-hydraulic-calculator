@@ -25,4 +25,5 @@ def test_roadmap_tracks_fan_pump_calculation_progress():
     text = (ROOT / "docs" / "ROADMAP_v0.2.0.md").read_text(encoding="utf-8")
     assert "后续开发风机 / 水泵选型校核计算函数" in text
     assert "- [x] 后续开发风机 / 水泵选型校核计算函数" in text
-    assert "- [ ] 后续开发 Streamlit 页面和导出功能" in text
+    assert "- [x] 后续开发 Streamlit 页面和导出功能" in text
+    assert "- [ ] 后续补充页面截图和线上展示检查" in text

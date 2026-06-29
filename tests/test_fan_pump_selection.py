@@ -23,12 +23,15 @@ def test_fan_selection_sample_data_calculates_expected_columns():
         "风压校核",
         "电机功率校核",
         "选型结论",
+        "复核建议",
     }
 
     assert not result.empty
     assert required_cols.issubset(result.columns)
     assert result.loc[0, "所需风量 (m³/h)"] > 0
     assert result.loc[0, "风机轴功率参考 (kW)"] > 0
+    assert result["复核建议"].notna().all()
+    assert not result.astype(str).apply(lambda col: col.str.contains("正式工程可直接使用")).any().any()
 
     conclusions = set(result["选型结论"])
     assert "建议可用" in conclusions
@@ -52,12 +55,15 @@ def test_pump_selection_sample_data_calculates_expected_columns():
         "扬程校核",
         "电机功率校核",
         "选型结论",
+        "复核建议",
     }
 
     assert not result.empty
     assert required_cols.issubset(result.columns)
     assert result.loc[0, "所需流量 (m³/h)"] > 0
     assert result.loc[0, "水泵轴功率参考 (kW)"] > 0
+    assert result["复核建议"].notna().all()
+    assert not result.astype(str).apply(lambda col: col.str.contains("正式工程可直接使用")).any().any()
 
     conclusions = set(result["选型结论"])
     assert "建议可用" in conclusions
