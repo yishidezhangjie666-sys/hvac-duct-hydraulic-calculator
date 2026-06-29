@@ -8,6 +8,7 @@ import pandas as pd
 import streamlit as st
 
 from utils.export_utils import export_formatted_excel, get_csv_bytes
+from utils.validation_notes import build_recommendation_rows, build_status_summary_rows
 from utils.word_report import build_calculation_report_docx
 
 
@@ -491,7 +492,8 @@ def _build_source_word_report(
         summary_rows=summary_rows,
         formula_rows=formula_rows,
         notes=[
-            "冷热源设备最终选型应结合设备样本、运行工况、效率等级、系统配置、备用原则、安装条件和现行规范进行复核。"
+            "冷热源设备最终选型应结合设备样本、运行工况、效率等级、系统配置、备用原则、安装条件和现行规范进行复核。",
+            "容量余量和温差校核为简化建议，应结合设备样本、运行工况、效率等级、备用原则和现行规范复核。",
         ] + (notes or []),
     )
 
@@ -509,6 +511,34 @@ def _summary_rows(result, id_col, capacity_col, conclusion_col="选型结论"):
         ("需复核", f"{review} 项"),
         ("总装机容量", f"{total_capacity:.2f} kW"),
     ]
+
+
+def _unique_notes(notes):
+    result = []
+    seen = set()
+    for note in notes:
+        if note and note not in seen:
+            result.append(note)
+            seen.add(note)
+    return result
+
+
+def _render_validation_interpretation(result, status_columns, summary_items, recommendations):
+    st.divider()
+    st.subheader("校核结果解读")
+
+    cols = st.columns(len(summary_items))
+    for col_obj, (label, value) in zip(cols, summary_items):
+        col_obj.metric(label, value)
+
+    status_rows = build_status_summary_rows(result, status_columns)
+    with st.expander("查看状态统计明细"):
+        for label, value in status_rows:
+            st.markdown(f"- {label}：{value}")
+
+    st.markdown("**复核建议**")
+    for note in _unique_notes(recommendations + build_recommendation_rows(result)):
+        st.markdown(f"- {note}")
 
 
 def _base_formula_table(extra_rows=""):
@@ -696,6 +726,30 @@ def _render_air_heat_pump_tab():
     summary_rows = _summary_rows(result, "scheme_id", "总制冷量 (kW)")
     _render_summary(summary_rows)
 
+    cooling_insufficient = int((result["制冷校核"] == "不足").sum())
+    heating_insufficient = int((result["制热校核"] == "不足").sum())
+    oversized_count = int(result["选型结论"].isin(["余量偏大", "明显偏大"]).sum())
+    review_count = int(result["选型结论"].str.contains("复核", na=False).sum())
+    heat_pump_recommendations = []
+    if cooling_insufficient:
+        heat_pump_recommendations.append("存在制冷不足项，优先复核设计冷负荷、冷量修正系数、单台制冷量和台数。")
+    if heating_insufficient:
+        heat_pump_recommendations.append("存在制热不足项，优先复核设计热负荷、低温制热衰减、融霜修正、单台制热量和台数。")
+    if oversized_count:
+        heat_pump_recommendations.append("存在容量余量偏大项，关注初投资、屋面布置、噪声、运行调节和部分负荷效率。")
+    heat_pump_recommendations.append("风冷热泵实际选型应结合室外设计工况、低温制热衰减、融霜修正和厂家样本复核。")
+    _render_validation_interpretation(
+        result,
+        ["制冷校核", "制热校核"],
+        [
+            ("制冷不足", f"{cooling_insufficient} 项"),
+            ("制热不足", f"{heating_insufficient} 项"),
+            ("余量偏大", f"{oversized_count} 项"),
+            ("需复核", f"{review_count} 项"),
+        ],
+        heat_pump_recommendations,
+    )
+
     st.divider()
     st.subheader("导出数据")
     df_export = _format_percent_columns(
@@ -799,6 +853,28 @@ def _render_chiller_tab():
     summary_rows = _summary_rows(result, "scheme_id", "总制冷量 (kW)")
     _render_summary(summary_rows)
 
+    capacity_insufficient = int((result["制冷校核"] == "不足").sum())
+    oversized_count = int(result["制冷校核"].isin(["偏大", "明显偏大"]).sum())
+    temp_review_count = int((result["温差校核"] == "温差需复核").sum())
+    chiller_recommendations = []
+    if capacity_insufficient:
+        chiller_recommendations.append("存在容量不足项，复核设计冷负荷、备用系数、单台制冷量和台数。")
+    if oversized_count:
+        chiller_recommendations.append("存在容量偏大项，关注部分负荷效率、初投资和机房布置。")
+    if temp_review_count:
+        chiller_recommendations.append("存在温差需复核项，复核冷冻水供回水温度、设计温差和系统运行策略。")
+    chiller_recommendations.append("冷水机组实际选型应结合冷却水条件、部分负荷性能和能效等级。")
+    _render_validation_interpretation(
+        result,
+        ["制冷校核", "温差校核"],
+        [
+            ("容量不足", f"{capacity_insufficient} 项"),
+            ("容量偏大", f"{oversized_count} 项"),
+            ("温差需复核", f"{temp_review_count} 项"),
+        ],
+        chiller_recommendations,
+    )
+
     st.divider()
     st.subheader("导出数据")
     df_export = _format_number_columns(
@@ -808,6 +884,9 @@ def _render_chiller_tab():
         ),
         ["供回水温差 Δt（℃）"],
     )
+    chiller_notes = []
+    if temp_review_count:
+        chiller_notes.append("存在温差需复核的方案时，应优先复核供回水温度设定和系统运行工况。")
     _render_export_buttons(
         df_export,
         summary_rows,
@@ -818,6 +897,7 @@ def _render_chiller_tab():
         CHILLER_INPUT_COLUMNS,
         CHILLER_RESULT_COLUMNS,
         SOURCE_FORMULA_ROWS + [COOLING_DELTA_FORMULA_ROW],
+        notes=chiller_notes,
     )
 
     st.divider()
@@ -905,6 +985,28 @@ def _render_boiler_tab():
     summary_rows = _summary_rows(result, "scheme_id", "总供热量 (kW)")
     _render_summary(summary_rows)
 
+    heating_insufficient = int((result["供热校核"] == "不足").sum())
+    oversized_count = int(result["供热校核"].isin(["偏大", "明显偏大"]).sum())
+    temp_review_count = int((result["温差校核"] == "温差需复核").sum())
+    boiler_recommendations = []
+    if heating_insufficient:
+        boiler_recommendations.append("存在供热量不足项，复核设计热负荷、备用系数、单台供热量和台数。")
+    if oversized_count:
+        boiler_recommendations.append("存在供热量余量偏大项，关注初投资、启停调节和低负荷运行。")
+    if temp_review_count:
+        boiler_recommendations.append("存在温差需复核项，复核供回水温度、热源形式和系统温差设定。")
+    boiler_recommendations.append("实际选型应结合燃料条件、效率、排放、系统压力和厂家样本复核。")
+    _render_validation_interpretation(
+        result,
+        ["供热校核", "温差校核"],
+        [
+            ("供热量不足", f"{heating_insufficient} 项"),
+            ("余量偏大", f"{oversized_count} 项"),
+            ("温差需复核", f"{temp_review_count} 项"),
+        ],
+        boiler_recommendations,
+    )
+
     st.divider()
     st.subheader("导出数据")
     df_export = _format_number_columns(
@@ -914,6 +1016,9 @@ def _render_boiler_tab():
         ),
         ["供回水温差 Δt（℃）"],
     )
+    boiler_notes = ["锅炉 / 热源设备温差通常按供水温度减回水温度计算。"]
+    if temp_review_count:
+        boiler_notes.append("存在温差需复核的方案时，应优先复核供回水温度设定和系统运行工况。")
     _render_export_buttons(
         df_export,
         summary_rows,
@@ -924,7 +1029,7 @@ def _render_boiler_tab():
         BOILER_INPUT_COLUMNS,
         BOILER_RESULT_COLUMNS,
         SOURCE_FORMULA_ROWS + [HEATING_DELTA_FORMULA_ROW],
-        notes=["锅炉 / 热源设备温差通常按供水温度减回水温度计算。"],
+        notes=boiler_notes,
     )
 
     st.divider()

@@ -8,6 +8,10 @@ import pandas as pd
 import streamlit as st
 
 from utils.export_utils import export_formatted_excel, get_csv_bytes
+from utils.validation_notes import (
+    build_recommendation_rows,
+    build_status_summary_rows,
+)
 from utils.word_report import build_calculation_report_docx
 
 
@@ -331,7 +335,7 @@ def _build_terminal_word_report(
         summary_rows=summary_rows,
         formula_rows=formula_rows,
         notes=[
-            "设备最终选型应结合厂家样本、噪声、余压、水阻、控制方式和现行规范进行复核。"
+            "校核结论为简化建议，应结合设备样本、噪声、余压、水阻、控制方式和现行规范复核。"
         ] + (notes or []),
     )
 
@@ -352,6 +356,34 @@ def _pau_summary_rows(df):
         ("风量不足项", f"{(df['风量校核'] == '不足').sum()} 项"),
         ("焓差需复核项", f"{(df['焓差校核'] == '焓差需复核').sum()} 项"),
     ]
+
+
+def _unique_notes(notes):
+    result = []
+    seen = set()
+    for note in notes:
+        if note and note not in seen:
+            result.append(note)
+            seen.add(note)
+    return result
+
+
+def _render_validation_interpretation(result, status_columns, summary_items, recommendations):
+    st.divider()
+    st.subheader("校核结果解读")
+
+    cols = st.columns(len(summary_items))
+    for col_obj, (label, value) in zip(cols, summary_items):
+        col_obj.metric(label, value)
+
+    status_rows = build_status_summary_rows(result, status_columns)
+    with st.expander("查看状态统计明细"):
+        for label, value in status_rows:
+            st.markdown(f"- {label}：{value}")
+
+    st.markdown("**复核建议**")
+    for note in _unique_notes(recommendations + build_recommendation_rows(result)):
+        st.markdown(f"- {note}")
 
 
 def _fcu_formula_table():
@@ -499,6 +531,27 @@ def _render_fcu_tab():
     for col_obj, (label, value) in zip(cols, _fcu_summary_rows(result)):
         col_obj.metric(label, value)
 
+    available_count = int((result["选型结论"] == "建议可用").sum())
+    insufficient_count = int((result["选型结论"] == "拟选偏小").sum())
+    oversized_count = int((result["选型结论"] == "余量偏大").sum())
+    fcu_recommendations = []
+    if insufficient_count:
+        fcu_recommendations.append("存在拟选偏小项，优先复核房间冷负荷、热负荷、设计风量和拟选型号。")
+    if oversized_count:
+        fcu_recommendations.append("存在余量偏大项，关注初投资、运行调节、噪声和舒适性。")
+    if available_count == len(result):
+        fcu_recommendations.append("当前结果在简化校核范围内，但仍需结合设备样本复核。")
+    _render_validation_interpretation(
+        result,
+        ["冷量校核", "热量校核", "风量校核"],
+        [
+            ("建议可用", f"{available_count} 项"),
+            ("拟选偏小", f"{insufficient_count} 项"),
+            ("余量偏大", f"{oversized_count} 项"),
+        ],
+        fcu_recommendations,
+    )
+
     st.divider()
     st.subheader("导出数据")
     df_export = _format_percent_columns(_rename_export_columns(result, FCU_EXPORT_MAP), ["冷量余量", "热量余量", "风量余量"])
@@ -642,6 +695,34 @@ def _render_pau_tab():
     for col_obj, (label, value) in zip(cols, _pau_summary_rows(result)):
         col_obj.metric(label, value)
 
+    available_count = int((result["选型结论"] == "建议可用").sum())
+    insufficient_count = int((result["选型结论"] == "拟选偏小").sum())
+    oversized_count = int((result["选型结论"] == "余量偏大").sum())
+    review_count = int((result["选型结论"] == "需复核").sum())
+    enthalpy_review_count = int((result["焓差校核"] == "焓差需复核").sum())
+    pau_recommendations = []
+    if enthalpy_review_count:
+        pau_recommendations.append(
+            "存在 hW - hN <= 0 的系统，当前工况不适合用于夏季新风冷负荷估算，应先复核室外/室内焓值和季节工况。"
+        )
+    if insufficient_count:
+        pau_recommendations.append("存在拟选偏小项，优先复核新风量、室外/室内焓值、拟选机组冷量和额定风量。")
+    if oversized_count:
+        pau_recommendations.append("存在余量偏大项，关注机组容量、风量配置、运行调节和部分负荷运行效果。")
+    if available_count == len(result):
+        pau_recommendations.append("当前结果在简化校核范围内，但仍需结合新风工况和设备样本复核。")
+    _render_validation_interpretation(
+        result,
+        ["冷量校核", "风量校核", "焓差校核"],
+        [
+            ("建议可用", f"{available_count} 项"),
+            ("拟选偏小", f"{insufficient_count} 项"),
+            ("余量偏大", f"{oversized_count} 项"),
+            ("需复核", f"{review_count} 项"),
+        ],
+        pau_recommendations,
+    )
+
     st.divider()
     st.subheader("导出数据")
     df_export = _blank_missing_export_values(
@@ -665,6 +746,9 @@ def _render_pau_tab():
             mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
             width="stretch",
         )
+    pau_notes = ["当室外空气焓值不高于室内空气焓值时，冷负荷估算结果应复核。"]
+    if enthalpy_review_count:
+        pau_notes.append("存在焓差需复核的系统时，应先复核室外 / 室内空气焓值和季节工况。")
     st.download_button(
         label="📄 导出 Word 计算说明书",
         data=_build_terminal_word_report(
@@ -676,7 +760,7 @@ def _render_pau_tab():
             PAU_INPUT_COLUMNS,
             PAU_RESULT_COLUMNS,
             PAU_FORMULA_ROWS,
-            notes=["当室外空气焓值不高于室内空气焓值时，冷负荷估算结果应复核。"],
+            notes=pau_notes,
         ),
         file_name="新风机组初步选型计算说明书.docx",
         mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
