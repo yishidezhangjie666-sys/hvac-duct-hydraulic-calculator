@@ -142,7 +142,10 @@ def render_ventilation_duct_module():
             st.error("未找到 sample_data.csv 文件。")
 
     # 可编辑数据表格
-    st.caption("请在表格中录入或编辑管段数据（双击单元格进行编辑）。")
+    st.caption(
+        "请在表格中录入或编辑管段数据（双击单元格进行编辑）。"
+        "示例数据包含不同风速和阻力特征的管段，用于展示合理、偏低、偏高等校核结果。"
+    )
     edited_df = st.data_editor(
         st.session_state["input_df"],
         num_rows="dynamic",

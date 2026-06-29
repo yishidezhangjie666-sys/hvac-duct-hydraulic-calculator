@@ -102,13 +102,13 @@ def _build_water_word_report(
 
 # ─── 示例数据 ────────────────────────────────────────
 SAMPLE_DATA = {
-    "pipe_no": ["W-1", "W-2", "W-3", "W-4"],
-    "load_kw": [5.0, 8.0, 12.0, 18.0],
-    "flow_m3h": [0.0, 0.0, 0.0, 0.0],
-    "diameter_mm": [25, 32, 40, 50],
-    "length_m": [12, 15, 18, 20],
-    "resistance_pa_per_m": [150, 120, 100, 90],
-    "local_zeta": [2.0, 2.5, 3.0, 3.5],
+    "pipe_no": ["W-1", "W-2", "W-3", "W-4", "W-5", "W-6"],
+    "load_kw": [3.0, 8.0, 18.0, 45.0, 30.0, 20.0],
+    "flow_m3h": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+    "diameter_mm": [25, 25, 40, 50, 100, 20],
+    "length_m": [10, 12, 18, 24, 16, 8],
+    "resistance_pa_per_m": [120, 150, 110, 95, 45, 260],
+    "local_zeta": [1.5, 2.0, 2.5, 3.0, 1.2, 5.0],
 }
 
 
@@ -247,7 +247,10 @@ def render_air_conditioning_water_module():
         st.success("已加载示例数据，水流量已根据负荷和温差自动估算，可手动修改。")
 
     # 可编辑数据表格
-    st.caption("双击单元格编辑，水流量可根据负荷自动估算，也支持手动修改。")
+    st.caption(
+        "双击单元格编辑，水流量可根据负荷自动估算，也支持手动修改。"
+        "示例数据覆盖小负荷支管、主管和不同流速校核状态，便于理解水力计算结果。"
+    )
     edited_df = st.data_editor(
         st.session_state["water_input_df"],
         num_rows="dynamic",

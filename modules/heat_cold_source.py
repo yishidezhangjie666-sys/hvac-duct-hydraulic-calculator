@@ -12,40 +12,40 @@ from utils.word_report import build_calculation_report_docx
 
 
 AIR_HEAT_PUMP_SAMPLE_DATA = {
-    "scheme_id": ["AHP-1", "AHP-2", "AHP-3"],
-    "service_area": ["办公楼低区", "办公楼高区", "综合楼"],
-    "cooling_load_kw": [520.0, 680.0, 860.0],
-    "heating_load_kw": [430.0, 560.0, 720.0],
-    "cooling_factor": [1.10, 1.10, 1.15],
-    "heating_factor": [1.15, 1.15, 1.20],
-    "single_cooling_kw": [300.0, 360.0, 420.0],
-    "single_heating_kw": [280.0, 340.0, 400.0],
-    "unit_count": [2, 2, 3],
-    "remark": ["屋面布置", "分区运行", "预留扩展"],
+    "scheme_id": ["AHP-1", "AHP-2", "AHP-3", "AHP-4"],
+    "service_area": ["办公楼低区", "办公楼高区", "综合楼", "小型附楼"],
+    "cooling_load_kw": [520.0, 680.0, 600.0, 300.0],
+    "heating_load_kw": [430.0, 560.0, 720.0, 250.0],
+    "cooling_factor": [1.10, 1.10, 1.10, 1.10],
+    "heating_factor": [1.15, 1.15, 1.20, 1.15],
+    "single_cooling_kw": [300.0, 330.0, 360.0, 300.0],
+    "single_heating_kw": [280.0, 360.0, 380.0, 280.0],
+    "unit_count": [2, 2, 2, 3],
+    "remark": ["屋面布置", "制冷容量偏小示例", "低温制热需关注", "容量余量偏大示例"],
 }
 
 CHILLER_SAMPLE_DATA = {
-    "scheme_id": ["CH-1", "CH-2", "CH-3"],
-    "service_area": ["办公楼", "商业裙房", "数据机房辅助"],
-    "cooling_load_kw": [1180.0, 1760.0, 650.0],
-    "cooling_factor": [1.10, 1.10, 1.20],
-    "single_cooling_kw": [700.0, 1000.0, 400.0],
-    "unit_count": [2, 2, 2],
-    "supply_temp_c": [7.0, 7.0, 6.0],
-    "return_temp_c": [12.0, 12.0, 12.0],
-    "remark": ["常规冷冻水", "双机配置", "备用要求较高"],
+    "scheme_id": ["CH-1", "CH-2", "CH-3", "CH-4"],
+    "service_area": ["办公楼", "商业裙房", "数据机房辅助", "展厅"],
+    "cooling_load_kw": [1180.0, 1760.0, 650.0, 900.0],
+    "cooling_factor": [1.10, 1.10, 1.20, 1.10],
+    "single_cooling_kw": [700.0, 800.0, 600.0, 550.0],
+    "unit_count": [2, 2, 2, 2],
+    "supply_temp_c": [7.0, 7.0, 6.0, 8.0],
+    "return_temp_c": [12.0, 12.0, 12.0, 16.0],
+    "remark": ["常规冷冻水", "容量偏小示例", "容量偏大示例", "温差需复核示例"],
 }
 
 BOILER_SAMPLE_DATA = {
-    "scheme_id": ["BH-1", "BH-2", "BH-3"],
-    "service_area": ["办公楼供暖", "生活热水", "综合热源"],
-    "heating_load_kw": [920.0, 380.0, 1450.0],
-    "heating_factor": [1.10, 1.15, 1.10],
-    "single_heating_kw": [600.0, 250.0, 900.0],
-    "unit_count": [2, 2, 2],
-    "supply_temp_c": [60.0, 55.0, 70.0],
-    "return_temp_c": [50.0, 45.0, 55.0],
-    "remark": ["两用一备需另核", "分时运行", "按分区调节"],
+    "scheme_id": ["BH-1", "BH-2", "BH-3", "BH-4"],
+    "service_area": ["办公楼供暖", "生活热水", "小型附属用房", "综合热源"],
+    "heating_load_kw": [920.0, 680.0, 380.0, 1450.0],
+    "heating_factor": [1.10, 1.15, 1.10, 1.10],
+    "single_heating_kw": [550.0, 350.0, 375.0, 900.0],
+    "unit_count": [2, 2, 2, 2],
+    "supply_temp_c": [60.0, 55.0, 70.0, 50.0],
+    "return_temp_c": [50.0, 45.0, 55.0, 48.0],
+    "remark": ["常规供暖示例", "容量偏小示例", "容量偏大示例", "温差需复核示例"],
 }
 
 AIR_HEAT_PUMP_EXPORT_MAP = {
@@ -617,6 +617,7 @@ def _render_air_heat_pump_tab():
     st.caption(
         "余量阈值为简化建议，可按项目要求调整。风冷热泵实际选型应结合室外设计工况、"
         "低温制热衰减、融霜修正、噪声、安装位置和厂家样本复核。"
+        "示例数据覆盖建议可用、拟选偏小和余量偏大等典型结果。"
     )
 
     if "source_air_heat_pump_df" not in st.session_state:
@@ -724,6 +725,7 @@ def _render_chiller_tab():
     st.caption(
         "冷水机组实际选型应结合冷冻水温度、冷却水条件、部分负荷性能、"
         "机房布置、能效等级和厂家样本复核。"
+        "示例数据覆盖容量合理、容量不足、容量偏大和温差需复核等典型结果。"
     )
 
     if "source_chiller_df" not in st.session_state:
@@ -829,6 +831,7 @@ def _render_boiler_tab():
     st.caption(
         "锅炉或热源设备实际选型应结合燃料条件、效率、排放、运行调节、备用原则、"
         "系统压力和厂家样本复核。"
+        "示例数据覆盖供热量合理、不足、偏大和供回水温差需复核等典型结果。"
     )
 
     if "source_boiler_df" not in st.session_state:

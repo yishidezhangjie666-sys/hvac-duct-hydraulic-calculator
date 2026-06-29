@@ -12,25 +12,25 @@ from utils.word_report import build_calculation_report_docx
 
 
 FCU_SAMPLE_DATA = {
-    "room_id": ["R-101", "R-102", "R-201", "R-202"],
-    "room_name": ["办公室", "会议室", "资料室", "开放办公区"],
-    "cooling_load_kw": [3.2, 5.8, 2.4, 8.5],
-    "heating_load_kw": [2.8, 4.6, 2.0, 7.2],
-    "design_airflow_m3h": [520, 860, 420, 1250],
-    "rated_cooling_kw": [3.8, 6.3, 2.8, 10.0],
-    "rated_heating_kw": [3.4, 5.2, 2.5, 8.4],
-    "rated_airflow_m3h": [600, 900, 450, 1400],
+    "room_id": ["R-101", "R-102", "R-201", "R-202", "R-301"],
+    "room_name": ["办公室", "会议室", "资料室", "开放办公区", "小型档案室"],
+    "cooling_load_kw": [3.0, 6.0, 3.2, 7.5, 2.0],
+    "heating_load_kw": [2.5, 4.8, 5.0, 6.2, 1.8],
+    "design_airflow_m3h": [500, 820, 520, 1200, 300],
+    "rated_cooling_kw": [3.4, 5.4, 3.7, 8.6, 4.0],
+    "rated_heating_kw": [3.0, 5.3, 4.4, 7.1, 4.0],
+    "rated_airflow_m3h": [560, 900, 600, 950, 800],
 }
 
 PAU_SAMPLE_DATA = {
-    "system_id": ["PAU-1", "PAU-2"],
-    "service_area": ["一层办公区", "二层会议区"],
-    "fresh_airflow_m3h": [2500, 1800],
-    "outdoor_enthalpy_kjkg": [85.0, 82.0],
-    "indoor_enthalpy_kjkg": [55.0, 54.0],
-    "air_density_kgm3": [1.20, 1.20],
-    "rated_cooling_kw": [30.0, 18.0],
-    "rated_airflow_m3h": [2800, 2000],
+    "system_id": ["PAU-1", "PAU-2", "PAU-3", "PAU-4"],
+    "service_area": ["一层办公区", "二层会议区", "报告厅", "过渡季内区"],
+    "fresh_airflow_m3h": [2400, 3000, 2200, 1800],
+    "outdoor_enthalpy_kjkg": [85.0, 86.0, 82.0, 52.0],
+    "indoor_enthalpy_kjkg": [55.0, 54.0, 54.0, 55.0],
+    "air_density_kgm3": [1.20, 1.20, 1.20, 1.20],
+    "rated_cooling_kw": [27.0, 25.0, 25.0, 18.0],
+    "rated_airflow_m3h": [2600, 3300, 1800, 2000],
 }
 
 FCU_EXPORT_MAP = {
@@ -295,6 +295,13 @@ def _format_percent_columns(df, columns):
     return formatted
 
 
+def _blank_missing_export_values(df):
+    """导出表中用空白显示需复核工况产生的缺失值。"""
+    return df.apply(
+        lambda col: col.astype(object).map(lambda value: "" if pd.isna(value) else value)
+    )
+
+
 def _select_report_columns(df, columns):
     available = [col for col in columns if col in df.columns]
     return df[available].copy()
@@ -390,6 +397,7 @@ def _render_fcu_tab():
     st.subheader("风机盘管初步选型")
     st.caption(
         "余量阈值为简化建议，可按项目要求调整，不能替代设备样本和规范校核。"
+        "示例数据包含建议可用、拟选偏小和余量偏大等典型结果，便于理解选型校核含义。"
     )
 
     if "terminal_fcu_df" not in st.session_state:
@@ -539,6 +547,7 @@ def _render_pau_tab():
     st.subheader("新风机组初步选型")
     st.caption(
         "当室外空气焓值不高于室内空气焓值时，不用于夏季新风冷负荷估算，相关冷量结果标记为需复核。"
+        "示例数据包含建议可用、拟选偏小、余量偏大和需复核等典型结果。"
     )
 
     if "terminal_pau_df" not in st.session_state:
@@ -635,7 +644,9 @@ def _render_pau_tab():
 
     st.divider()
     st.subheader("导出数据")
-    df_export = _format_percent_columns(_rename_export_columns(result, PAU_EXPORT_MAP), ["冷量余量", "风量余量"])
+    df_export = _blank_missing_export_values(
+        _format_percent_columns(_rename_export_columns(result, PAU_EXPORT_MAP), ["冷量余量", "风量余量"])
+    )
     summary_rows = _pau_summary_rows(result)
     col_csv, col_xlsx = st.columns(2)
     with col_csv:
