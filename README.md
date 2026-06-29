@@ -121,6 +121,12 @@ https://hvac-mep-calc-toolbox.streamlit.app/
 
 ---
 
+## 校核状态说明
+
+各模块中的“偏低、合适、不足、偏大、明显偏大、需复核”等状态均为简化校核提示，详见 [校核状态说明](./docs/CHECK_GUIDE.md)。
+
+---
+
 ## 使用方法
 
 ```bash
