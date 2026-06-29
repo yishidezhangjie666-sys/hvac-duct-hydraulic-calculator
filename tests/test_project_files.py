@@ -17,6 +17,7 @@ def test_required_project_files_exist():
         "modules/air_conditioning_water.py",
         "modules/terminal_equipment.py",
         "modules/heat_cold_source.py",
+        "modules/fan_pump_selection.py",
         "utils",
     ]
     for rel_path in required_paths:

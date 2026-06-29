@@ -21,7 +21,8 @@ def test_readme_links_fan_pump_prestudy():
     assert "./docs/FAN_PUMP_SELECTION_PRESTUDY.md" in text
 
 
-def test_roadmap_keeps_fan_pump_development_unfinished():
+def test_roadmap_tracks_fan_pump_calculation_progress():
     text = (ROOT / "docs" / "ROADMAP_v0.2.0.md").read_text(encoding="utf-8")
     assert "后续开发风机 / 水泵选型校核计算函数" in text
-    assert "- [ ] 后续开发风机 / 水泵选型校核计算函数" in text
+    assert "- [x] 后续开发风机 / 水泵选型校核计算函数" in text
+    assert "- [ ] 后续开发 Streamlit 页面和导出功能" in text

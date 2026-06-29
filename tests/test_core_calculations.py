@@ -115,3 +115,20 @@ def test_heat_cold_source_sample_calculations_run():
         boiler.columns
     )
     assert boiler["供热量余量"].notna().any()
+
+
+def test_fan_pump_sample_calculations_run():
+    from modules.fan_pump_selection import (
+        FAN_SAMPLE_DATA,
+        PUMP_SAMPLE_DATA,
+        calculate_fan_selection,
+        calculate_pump_selection,
+    )
+
+    fan = calculate_fan_selection(FAN_SAMPLE_DATA)
+    pump = calculate_pump_selection(PUMP_SAMPLE_DATA)
+
+    assert not fan.empty
+    assert not pump.empty
+    assert "选型结论" in fan.columns
+    assert "选型结论" in pump.columns
