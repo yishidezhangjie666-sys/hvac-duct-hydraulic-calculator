@@ -28,7 +28,6 @@ def test_docs_do_not_overstate_engineering_use():
         assert "正式工程可直接使用" not in text
 
 
-def test_readme_keeps_stable_version_v020():
+def test_readme_keeps_stable_version_v021():
     text = (ROOT / "README.md").read_text(encoding="utf-8")
-    assert "当前稳定版本：`v0.2.0`" in text
-    assert "当前稳定版本：`v0.2.1`" not in text
+    assert "当前稳定版本：`v0.2.1`" in text
