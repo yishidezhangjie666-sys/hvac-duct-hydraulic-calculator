@@ -490,6 +490,42 @@ def _format_number_columns(df, columns, digits=2):
     return result
 
 
+def _format_display_table(df, percent_columns=None, number_formats=None):
+    """Return a display-only table with stable missing-value text."""
+    percent_columns = set(percent_columns or [])
+    number_formats = number_formats or {}
+    result = df.copy()
+
+    def is_missing(value):
+        try:
+            return bool(pd.isna(value))
+        except (TypeError, ValueError):
+            return False
+
+    def format_value(value, formatter=None):
+        if is_missing(value):
+            return "—"
+        if formatter is None:
+            return value
+        try:
+            return format(float(value), formatter)
+        except (TypeError, ValueError):
+            return value
+
+    for column in result.columns:
+        if column in percent_columns:
+            result[column] = result[column].map(
+                lambda value: format_value(value, ".1%")
+            )
+        elif column in number_formats:
+            result[column] = result[column].map(
+                lambda value, formatter=number_formats[column]: format_value(value, formatter)
+            )
+        else:
+            result[column] = result[column].map(lambda value: "—" if is_missing(value) else value)
+    return result
+
+
 def _blank_missing_export_values(df):
     return df.apply(
         lambda col: col.astype(object).map(lambda value: "" if pd.isna(value) else value)
@@ -706,9 +742,15 @@ def _render_fan_tab():
         "复核建议",
         "remark",
     ]
-    df_display = result[display_cols].copy()
-    for column in ["风量余量", "风压余量", "风机轴功率参考 (kW)", "电机功率余量"]:
-        df_display[column] = df_display[column].apply(lambda value: None if pd.isna(value) else value)
+    df_display = _format_display_table(
+        result[display_cols],
+        percent_columns=["风量余量", "风压余量", "电机功率余量"],
+        number_formats={
+            "所需风量 (m³/h)": ".0f",
+            "所需风压 (Pa)": ".1f",
+            "风机轴功率参考 (kW)": ".2f",
+        },
+    )
     st.dataframe(
         df_display,
         width="stretch",
@@ -716,12 +758,12 @@ def _render_fan_tab():
         column_config={
             "scheme_id": "方案编号",
             "service_system": "服务系统",
-            "所需风量 (m³/h)": st.column_config.NumberColumn("所需风量 (m³/h)", format="%.0f"),
-            "所需风压 (Pa)": st.column_config.NumberColumn("所需风压 (Pa)", format="%.1f"),
-            "风量余量": st.column_config.NumberColumn("风量余量", format="%.1%"),
-            "风压余量": st.column_config.NumberColumn("风压余量", format="%.1%"),
-            "风机轴功率参考 (kW)": st.column_config.NumberColumn("风机轴功率参考 (kW)", format="%.2f"),
-            "电机功率余量": st.column_config.NumberColumn("电机功率余量", format="%.1%"),
+            "所需风量 (m³/h)": st.column_config.TextColumn("所需风量 (m³/h)"),
+            "所需风压 (Pa)": st.column_config.TextColumn("所需风压 (Pa)"),
+            "风量余量": st.column_config.TextColumn("风量余量"),
+            "风压余量": st.column_config.TextColumn("风压余量"),
+            "风机轴功率参考 (kW)": st.column_config.TextColumn("风机轴功率参考 (kW)"),
+            "电机功率余量": st.column_config.TextColumn("电机功率余量"),
             "remark": "备注",
         },
     )
@@ -875,9 +917,15 @@ def _render_pump_tab():
         "复核建议",
         "remark",
     ]
-    df_display = result[display_cols].copy()
-    for column in ["流量余量", "扬程余量", "水泵轴功率参考 (kW)", "电机功率余量"]:
-        df_display[column] = df_display[column].apply(lambda value: None if pd.isna(value) else value)
+    df_display = _format_display_table(
+        result[display_cols],
+        percent_columns=["流量余量", "扬程余量", "电机功率余量"],
+        number_formats={
+            "所需流量 (m³/h)": ".2f",
+            "所需扬程 (m)": ".2f",
+            "水泵轴功率参考 (kW)": ".2f",
+        },
+    )
     st.dataframe(
         df_display,
         width="stretch",
@@ -885,12 +933,12 @@ def _render_pump_tab():
         column_config={
             "scheme_id": "方案编号",
             "service_system": "服务系统",
-            "所需流量 (m³/h)": st.column_config.NumberColumn("所需流量 (m³/h)", format="%.2f"),
-            "所需扬程 (m)": st.column_config.NumberColumn("所需扬程 (m)", format="%.2f"),
-            "流量余量": st.column_config.NumberColumn("流量余量", format="%.1%"),
-            "扬程余量": st.column_config.NumberColumn("扬程余量", format="%.1%"),
-            "水泵轴功率参考 (kW)": st.column_config.NumberColumn("水泵轴功率参考 (kW)", format="%.2f"),
-            "电机功率余量": st.column_config.NumberColumn("电机功率余量", format="%.1%"),
+            "所需流量 (m³/h)": st.column_config.TextColumn("所需流量 (m³/h)"),
+            "所需扬程 (m)": st.column_config.TextColumn("所需扬程 (m)"),
+            "流量余量": st.column_config.TextColumn("流量余量"),
+            "扬程余量": st.column_config.TextColumn("扬程余量"),
+            "水泵轴功率参考 (kW)": st.column_config.TextColumn("水泵轴功率参考 (kW)"),
+            "电机功率余量": st.column_config.TextColumn("电机功率余量"),
             "remark": "备注",
         },
     )

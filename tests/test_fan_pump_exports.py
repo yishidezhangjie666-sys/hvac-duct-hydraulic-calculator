@@ -15,9 +15,19 @@ def _assert_docx_contains(data, expected_title):
 
     doc = Document(BytesIO(data))
     paragraph_text = "\n".join(paragraph.text for paragraph in doc.paragraphs)
+    table_text = "\n".join(
+        cell.text
+        for table in doc.tables
+        for row in table.rows
+        for cell in row.cells
+    )
+    full_text = paragraph_text + "\n" + table_text
     assert expected_title in paragraph_text
     assert "说明与免责声明" in paragraph_text
     assert len(doc.tables) >= 3
+    assert "None" not in full_text
+    assert "NaN" not in full_text
+    assert "<NA>" not in full_text
 
 
 def test_fan_word_report_can_be_opened():

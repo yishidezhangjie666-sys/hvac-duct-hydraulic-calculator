@@ -110,3 +110,63 @@ def test_fan_pump_invalid_inputs_need_review():
     assert pd.isna(pump.loc[0, "流量余量"])
     assert pd.isna(pump.loc[0, "水泵轴功率参考 (kW)"])
     assert pump.loc[0, "选型结论"] == "需复核"
+
+
+def test_fan_display_table_replaces_missing_values():
+    from modules.fan_pump_selection import _format_display_table, calculate_fan_selection
+
+    result = calculate_fan_selection(
+        {
+            "scheme_id": ["FAN-X"],
+            "required_airflow_m3h": [0.0],
+            "required_pressure_pa": [650.0],
+            "airflow_factor": [1.10],
+            "pressure_factor": [1.15],
+            "rated_airflow_m3h": [0.0],
+            "rated_pressure_pa": [850.0],
+            "motor_power_kw": [5.5],
+            "fan_efficiency": [0.0],
+        }
+    )
+
+    display = _format_display_table(
+        result[["风量余量", "风压余量", "风机轴功率参考 (kW)", "电机功率余量"]],
+        percent_columns=["风量余量", "风压余量", "电机功率余量"],
+        number_formats={"风机轴功率参考 (kW)": ".2f"},
+    )
+    text = "\n".join(display.astype(str).to_numpy().ravel())
+
+    assert "—" in text
+    assert "None" not in text
+    assert "NaN" not in text
+    assert "<NA>" not in text
+
+
+def test_pump_display_table_replaces_missing_values():
+    from modules.fan_pump_selection import _format_display_table, calculate_pump_selection
+
+    result = calculate_pump_selection(
+        {
+            "scheme_id": ["PUMP-X"],
+            "required_flow_m3h": [0.0],
+            "required_head_m": [28.0],
+            "flow_factor": [1.10],
+            "head_factor": [1.15],
+            "rated_flow_m3h": [0.0],
+            "rated_head_m": [36.0],
+            "motor_power_kw": [15.0],
+            "pump_efficiency": [0.0],
+        }
+    )
+
+    display = _format_display_table(
+        result[["流量余量", "扬程余量", "水泵轴功率参考 (kW)", "电机功率余量"]],
+        percent_columns=["流量余量", "扬程余量", "电机功率余量"],
+        number_formats={"水泵轴功率参考 (kW)": ".2f"},
+    )
+    text = "\n".join(display.astype(str).to_numpy().ravel())
+
+    assert "—" in text
+    assert "None" not in text
+    assert "NaN" not in text
+    assert "<NA>" not in text
