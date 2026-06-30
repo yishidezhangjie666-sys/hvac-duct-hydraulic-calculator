@@ -283,6 +283,18 @@ streamlit run app.py
 
 ![冷热源设备公式说明](./screenshots/20260628_source_formula.png)
 
+### 风机 / 水泵选型校核：风机选型结果
+
+![风机 / 水泵选型校核：风机选型结果](./screenshots/20260630_fan_selection_result.png)
+
+### 风机 / 水泵选型校核：水泵选型结果
+
+![风机 / 水泵选型校核：水泵选型结果](./screenshots/20260630_pump_selection_result.png)
+
+### 风机 / 水泵选型校核公式说明
+
+![风机 / 水泵选型校核公式说明](./screenshots/20260630_fan_pump_formula.png)
+
 ### Word 计算说明书导出
 
 ![Word 计算说明书导出](./screenshots/word-export.png)
