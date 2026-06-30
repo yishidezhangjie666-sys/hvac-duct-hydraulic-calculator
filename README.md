@@ -130,6 +130,16 @@ https://hvac-mep-calc-toolbox.streamlit.app/
 
 ---
 
+## 使用文档
+
+- [用户使用指南](./docs/USER_GUIDE.md)
+- [Word 计算说明书导出说明](./docs/WORD_EXPORT_GUIDE.md)
+- [示例数据说明](./docs/SAMPLE_DATA_GUIDE.md)
+- [校核状态说明](./docs/CHECK_GUIDE.md)
+- [v0.2.1 Roadmap](./docs/ROADMAP_v0.2.1.md)
+
+---
+
 ## 校核状态说明
 
 各模块中的“偏低、合适、不足、偏大、明显偏大、需复核”等状态均为简化校核提示，详见 [校核状态说明](./docs/CHECK_GUIDE.md)。
@@ -311,9 +321,9 @@ streamlit run app.py
 - [x] 开发风机 / 水泵选型校核计算函数
 - [x] 接入风机 / 水泵选型校核 Streamlit 页面和导出功能
 
-后续小版本将优先进行文档一致性、线上体验、Word 导出可读性和典型工况示例优化。
+后续小版本将优先进行 Word 导出可读性、使用说明、线上体验和典型工况示例优化。
 
-更多下一阶段计划见 [v0.2.0 Roadmap](./docs/ROADMAP_v0.2.0.md)。
+更多下一阶段计划见 [v0.2.0 Roadmap](./docs/ROADMAP_v0.2.0.md) 和 [v0.2.1 Roadmap](./docs/ROADMAP_v0.2.1.md)。
 
 ---
 

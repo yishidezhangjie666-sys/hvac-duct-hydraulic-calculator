@@ -1,28 +1,61 @@
 """Unified Word calculation report builder."""
 
+from datetime import datetime
 import io
 
 import pandas as pd
 from docx import Document
+from docx.enum.table import WD_CELL_VERTICAL_ALIGNMENT
+from docx.enum.table import WD_TABLE_ALIGNMENT
+from docx.shared import Inches, Pt
 
 
 DEFAULT_NOTES = [
-    "本工具采用简化工程计算口径。",
-    "结果仅用于学习、课程设计辅助核算和工程初步校核。",
-    "不能替代正式工程设计、设备样本选型或规范校核。",
+    "本工具采用简化工程计算口径，结果仅用于学习、课程设计辅助核算和工程初步校核，不能替代正式工程设计、设备样本选型或规范校核。",
 ]
 
 
-def _safe_text(value):
+def _safe_text(value, missing="—"):
     """Return a stable text value for Word cells and paragraphs."""
     if value is None:
-        return ""
+        return missing
     try:
         if pd.isna(value):
-            return ""
+            return missing
     except (TypeError, ValueError):
         pass
     return str(value)
+
+
+def _configure_document(doc):
+    section = doc.sections[0]
+    section.top_margin = Inches(0.75)
+    section.bottom_margin = Inches(0.75)
+    section.left_margin = Inches(0.7)
+    section.right_margin = Inches(0.7)
+
+    normal_style = doc.styles["Normal"]
+    normal_style.font.name = "Microsoft YaHei"
+    normal_style.font.size = Pt(10.5)
+
+    for style_name in ["Heading 1", "Heading 2", "Title"]:
+        if style_name in doc.styles:
+            doc.styles[style_name].font.name = "Microsoft YaHei"
+
+
+def _set_paragraph_font(paragraph, size=10.5, bold=None):
+    for run in paragraph.runs:
+        run.font.name = "Microsoft YaHei"
+        run.font.size = Pt(size)
+        if bold is not None:
+            run.bold = bold
+
+
+def _set_cell_text(cell, text, bold=False):
+    cell.text = _safe_text(text)
+    cell.vertical_alignment = WD_CELL_VERTICAL_ALIGNMENT.CENTER
+    for paragraph in cell.paragraphs:
+        _set_paragraph_font(paragraph, size=9, bold=bold)
 
 
 def _add_heading(doc, text, level):
@@ -31,9 +64,10 @@ def _add_heading(doc, text, level):
 
 def _add_paragraphs(doc, paragraphs):
     for paragraph in paragraphs or []:
-        text = _safe_text(paragraph)
+        text = _safe_text(paragraph, missing="")
         if text:
-            doc.add_paragraph(text)
+            new_paragraph = doc.add_paragraph(text)
+            _set_paragraph_font(new_paragraph)
 
 
 def _normalize_table_data(table_data):
@@ -88,7 +122,8 @@ def _coerce_table_entry(entry, default_title):
 def _add_table(doc, title, df_or_rows):
     title_text = _safe_text(title)
     if title_text:
-        doc.add_paragraph(title_text)
+        title_paragraph = doc.add_paragraph(title_text)
+        _set_paragraph_font(title_paragraph, bold=True)
 
     headers, rows = _normalize_table_data(df_or_rows)
     if not headers or not rows:
@@ -97,14 +132,18 @@ def _add_table(doc, title, df_or_rows):
 
     table = doc.add_table(rows=1, cols=len(headers))
     table.style = "Table Grid"
+    table.autofit = True
+    table.alignment = WD_TABLE_ALIGNMENT.CENTER
 
     for idx, header in enumerate(headers):
-        table.rows[0].cells[idx].text = _safe_text(header)
+        _set_cell_text(table.rows[0].cells[idx], header, bold=True)
 
     for row in rows:
         cells = table.add_row().cells
         for idx, value in enumerate(row):
-            cells[idx].text = _safe_text(value)
+            _set_cell_text(cells[idx], value)
+
+    doc.add_paragraph("")
 
 
 def _add_key_value_rows(doc, rows):
@@ -162,8 +201,17 @@ def build_calculation_report_docx(
 ):
     """Build a unified calculation report and return .docx bytes."""
     doc = Document()
+    _configure_document(doc)
 
     _add_heading(doc, title, 0)
+    _add_paragraphs(
+        doc,
+        [
+            "生成工具：建环工程计算工具箱",
+            "当前稳定版本：v0.2.0",
+            f"生成时间：{datetime.now().strftime('%Y-%m-%d %H:%M')}",
+        ],
+    )
 
     _add_heading(doc, "一、模块说明", 1)
     _add_paragraphs(
@@ -193,7 +241,7 @@ def build_calculation_report_docx(
     _add_heading(doc, "四、系统汇总", 1)
     _add_key_value_rows(doc, summary_rows)
 
-    _add_heading(doc, "五、计算公式说明", 1)
+    _add_heading(doc, "五、公式说明", 1)
     _add_table(doc, "公式说明表", _normalize_formula_rows(formula_rows))
 
     _add_heading(doc, "六、说明与免责声明", 1)
