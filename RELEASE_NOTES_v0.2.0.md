@@ -1,4 +1,4 @@
-# v0.2.0 Release Notes 草稿
+# v0.2.0 Release Notes
 
 ## 版本定位
 

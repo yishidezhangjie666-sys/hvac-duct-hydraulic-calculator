@@ -12,7 +12,7 @@ https://hvac-mep-calc-toolbox.streamlit.app/
 
 ## 当前版本
 
-当前稳定版本：`v0.1.0`
+当前稳定版本：`v0.2.0`
 
 详见 [CHANGELOG.md](./CHANGELOG.md)。
 
