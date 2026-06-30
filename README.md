@@ -31,7 +31,7 @@ https://hvac-mep-calc-toolbox.streamlit.app/
 - **模块化结构**：modules 与 utils 分离，便于继续扩展
 - **多格式导出**：支持 CSV、Excel 和 Word 计算说明书
 - **在线部署**：已部署至 Streamlit Community Cloud
-- **可扩展性**：后续可继续增加新风负荷深化计算、风机 / 水泵选型校核等模块
+- **可扩展性**：后续可继续增加新风负荷深化计算、负荷估算、设备选型辅助和更多建环常用计算模块
 
 ---
 
@@ -310,6 +310,8 @@ streamlit run app.py
 - [x] 风机 / 水泵选型校核预研与模块设计
 - [x] 开发风机 / 水泵选型校核计算函数
 - [x] 接入风机 / 水泵选型校核 Streamlit 页面和导出功能
+
+后续小版本将优先进行文档一致性、线上体验、Word 导出可读性和典型工况示例优化。
 
 更多下一阶段计划见 [v0.2.0 Roadmap](./docs/ROADMAP_v0.2.0.md)。
 
