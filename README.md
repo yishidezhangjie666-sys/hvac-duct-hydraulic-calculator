@@ -2,7 +2,25 @@
 
 [![Project Checks](https://github.com/yishidezhangjie666-sys/hvac-duct-hydraulic-calculator/actions/workflows/ci.yml/badge.svg)](https://github.com/yishidezhangjie666-sys/hvac-duct-hydraulic-calculator/actions/workflows/ci.yml)
 
-> Building Environment Engineering Calculator — 面向建筑环境与能源应用工程的专业计算工具集
+> 面向建筑环境与能源应用工程的在线工程计算工具箱，覆盖通风风管、空调水系统、空调末端、冷热源设备和风机 / 水泵选型校核，支持在线计算、结果校核以及 CSV、Excel、Word 计算说明书导出。
+
+> Building Environment Engineering Calculator — a Streamlit-based HVAC calculation toolbox for learning, preliminary checking and portfolio presentation.
+
+## 项目速览
+
+| 维度 | 内容 |
+|---|---|
+| 专业方向 | 建筑环境与能源应用工程 / 暖通空调 / 通风与空调水系统 |
+| 当前模块 | 通风风管、空调水系统、空调末端、冷热源设备、风机 / 水泵选型校核 |
+| 核心能力 | 在线录入、批量计算、简化校核、结果解读、多格式导出 |
+| 工程质量 | GitHub Actions、pytest、发布后检查记录、版本化 Release |
+| 当前稳定版本 | `v0.2.1` |
+
+## 项目展示入口
+
+- [在线体验](https://hvac-mep-calc-toolbox.streamlit.app/)：直接访问 Streamlit 在线版本。
+- [项目展示说明](./docs/PROJECT_SHOWCASE.md)：面向仓库访问者，说明项目背景、功能边界、技术实现和质量保障。
+- [用户使用指南](./docs/USER_GUIDE.md)：查看模块入口、输入方式、结果理解和导出流程。
 
 ## 在线体验
 
@@ -132,6 +150,7 @@ https://hvac-mep-calc-toolbox.streamlit.app/
 
 ## 使用文档
 
+- [项目展示说明](./docs/PROJECT_SHOWCASE.md)
 - [用户使用指南](./docs/USER_GUIDE.md)
 - [Word 计算说明书导出说明](./docs/WORD_EXPORT_GUIDE.md)
 - [示例数据说明](./docs/SAMPLE_DATA_GUIDE.md)
