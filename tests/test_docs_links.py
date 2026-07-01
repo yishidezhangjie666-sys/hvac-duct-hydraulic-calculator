@@ -7,7 +7,10 @@ ROOT = Path(__file__).resolve().parents[1]
 def test_new_docs_exist_and_are_linked_from_readme():
     readme = (ROOT / "README.md").read_text(encoding="utf-8")
     docs = [
+        "PROJECT_HANDOFF.md",
         "docs/PROJECT_SHOWCASE.md",
+        "docs/PROJECT_FINAL_SUMMARY.md",
+        "docs/NEXT_STEPS.md",
         "docs/PORTFOLIO_PITCH.md",
         "docs/FAQ.md",
         "docs/USER_GUIDE.md",
@@ -34,7 +37,10 @@ def test_docs_do_not_overstate_engineering_use():
     ]
     for path in [
         ROOT / "README.md",
+        ROOT / "PROJECT_HANDOFF.md",
         ROOT / "docs" / "PROJECT_SHOWCASE.md",
+        ROOT / "docs" / "PROJECT_FINAL_SUMMARY.md",
+        ROOT / "docs" / "NEXT_STEPS.md",
         ROOT / "docs" / "PORTFOLIO_PITCH.md",
         ROOT / "docs" / "FAQ.md",
         ROOT / "docs" / "USER_GUIDE.md",

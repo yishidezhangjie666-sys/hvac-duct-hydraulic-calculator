@@ -20,6 +20,9 @@
 
 - [在线体验](https://hvac-mep-calc-toolbox.streamlit.app/)：直接访问 Streamlit 在线版本。
 - [项目展示说明](./docs/PROJECT_SHOWCASE.md)：面向仓库访问者，说明项目背景、功能边界、技术实现和质量保障。
+- [项目最终总结](./docs/PROJECT_FINAL_SUMMARY.md)：面向老师、同学、面试官和作品集访问者的完整总结。
+- [后续维护建议](./docs/NEXT_STEPS.md)：记录后续小修、展示优化和谨慎扩展方向。
+- [项目交接说明](./PROJECT_HANDOFF.md)：供新对话、Codex 或其他 AI 工具继续维护时快速接手。
 - [作品集介绍文案](./docs/PORTFOLIO_PITCH.md)：整理简历、面试和作品集展示时可参考的项目表达。
 - [常见问题](./docs/FAQ.md)：说明适用范围、导出价值、校核提示和项目边界。
 - [用户使用指南](./docs/USER_GUIDE.md)：查看模块入口、输入方式、结果理解和导出流程。
@@ -153,6 +156,9 @@ https://hvac-mep-calc-toolbox.streamlit.app/
 ## 使用文档
 
 - [项目展示说明](./docs/PROJECT_SHOWCASE.md)
+- [项目最终总结](./docs/PROJECT_FINAL_SUMMARY.md)
+- [后续维护建议](./docs/NEXT_STEPS.md)
+- [项目交接说明](./PROJECT_HANDOFF.md)
 - [作品集介绍文案](./docs/PORTFOLIO_PITCH.md)
 - [常见问题](./docs/FAQ.md)
 - [用户使用指南](./docs/USER_GUIDE.md)
