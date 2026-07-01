@@ -260,6 +260,16 @@ streamlit run app.py
 
 ## 项目截图
 
+### v0.2.1 重点展示
+
+#### 风机 / 水泵结果表空值显示优化
+
+![v0.2.1 风机 / 水泵结果表空值显示优化](./screenshots/20260701_v021_fan_pump_result_clean.png)
+
+#### 多格式导出区域
+
+![v0.2.1 多格式导出区域](./screenshots/20260701_v021_export_area.png)
+
 ### 首页与模块选择
 
 ![首页与模块选择](./screenshots/20260628_home.png)

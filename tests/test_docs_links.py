@@ -1,3 +1,4 @@
+import re
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -48,3 +49,25 @@ def test_docs_do_not_overstate_engineering_use():
 def test_readme_keeps_stable_version_v021():
     text = (ROOT / "README.md").read_text(encoding="utf-8")
     assert "当前稳定版本：`v0.2.1`" in text
+
+
+def test_documented_local_screenshots_exist():
+    docs = [
+        ROOT / "README.md",
+        ROOT / "docs" / "PROJECT_SHOWCASE.md",
+    ]
+    markdown_image_pattern = re.compile(r"!\[[^\]]*\]\(([^)]+)\)")
+    screenshot_text_pattern = re.compile(r"`?(?:\./)?(screenshots/[^`\s)]+\.(?:png|jpg|jpeg|webp))`?")
+
+    for path in docs:
+        text = path.read_text(encoding="utf-8")
+        referenced = set()
+        referenced.update(markdown_image_pattern.findall(text))
+        referenced.update(screenshot_text_pattern.findall(text))
+
+        for ref in referenced:
+            normalized = ref.split("#", 1)[0].split("?", 1)[0]
+            if normalized.startswith("./"):
+                normalized = normalized[2:]
+            if normalized.startswith("screenshots/"):
+                assert (ROOT / normalized).exists(), f"{path}: {ref}"

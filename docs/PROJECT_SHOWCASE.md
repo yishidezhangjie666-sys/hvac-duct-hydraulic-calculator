@@ -57,7 +57,12 @@
 - 风机 / 水泵选型校核：`screenshots/20260630_fan_selection_result.png`
 - Word 导出示例：`screenshots/word-export.png`
 
-本次展示优化不新增截图文件，仅复用仓库中已有截图资源。
+下方 v0.2.1 重点截图用于补充展示当前风机 / 水泵模块结果表和导出区域。
+
+## v0.2.1 重点截图
+
+- 风机 / 水泵结果表空值显示优化：`screenshots/20260701_v021_fan_pump_result_clean.png`
+- 多格式导出区域：`screenshots/20260701_v021_export_area.png`
 
 ## 项目边界
 
