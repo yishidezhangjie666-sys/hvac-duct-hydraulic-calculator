@@ -27,7 +27,7 @@ module = st.sidebar.selectbox(
 )
 
 st.sidebar.markdown("---")
-st.sidebar.markdown("当前稳定版本：`v0.2.0`")
+st.sidebar.markdown("当前稳定版本：`v0.2.1`")
 st.sidebar.caption("本工具用于学习、课程设计辅助核算和工程初步校核，不能替代正式工程设计。")
 st.sidebar.markdown(
     "\n".join(

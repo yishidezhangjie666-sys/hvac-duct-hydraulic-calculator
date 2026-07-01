@@ -61,6 +61,7 @@
 
 ## v0.2.1 重点截图
 
+- 首页侧边栏与文档入口：`screenshots/20260701_v021_home_sidebar.png`
 - 风机 / 水泵结果表空值显示优化：`screenshots/20260701_v021_fan_pump_result_clean.png`
 - 多格式导出区域：`screenshots/20260701_v021_export_area.png`
 
